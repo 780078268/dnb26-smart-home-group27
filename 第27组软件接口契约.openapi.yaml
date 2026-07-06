@@ -1,0 +1,646 @@
+openapi: 3.0.3
+info:
+  title: Group 27 Smart Home Software API
+  version: 0.2.0
+  description: API contract for Group 27 smart home software team using Orange Pi / Huawei board as the device gateway.
+servers:
+  - url: http://localhost:8000
+paths:
+  /api/health:
+    get:
+      summary: Health check
+      responses:
+        "200":
+          description: Service status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+  /api/devices:
+    get:
+      summary: List devices
+      responses:
+        "200":
+          description: Device list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceListResponse"
+  /api/status/latest:
+    get:
+      summary: Get latest telemetry status
+      responses:
+        "200":
+          description: Latest status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TelemetryResponse"
+  /api/telemetry:
+    get:
+      summary: Query telemetry history
+      parameters:
+        - name: from
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 200
+      responses:
+        "200":
+          description: Telemetry records
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TelemetryListResponse"
+  /api/persons:
+    get:
+      summary: List authorized persons
+      responses:
+        "200":
+          description: Person list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PersonListResponse"
+    post:
+      summary: Create a person
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PersonCreate"
+      responses:
+        "200":
+          description: Created person
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PersonResponse"
+  /api/persons/{person_id}:
+    patch:
+      summary: Update a person
+      parameters:
+        - $ref: "#/components/parameters/PersonId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PersonPatch"
+      responses:
+        "200":
+          description: Updated person
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PersonResponse"
+    delete:
+      summary: Delete a person
+      parameters:
+        - $ref: "#/components/parameters/PersonId"
+      responses:
+        "200":
+          description: Delete result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OkResponse"
+  /api/persons/{person_id}/face-samples:
+    post:
+      summary: Upload a face sample
+      parameters:
+        - $ref: "#/components/parameters/PersonId"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - image
+              properties:
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Enrollment result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FaceEnrollResponse"
+  /api/photos:
+    get:
+      summary: List photos and recognition results
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        "200":
+          description: Photo list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PhotoListResponse"
+  /api/commands:
+    post:
+      summary: Create a remote control command
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CommandCreate"
+      responses:
+        "200":
+          description: Created command
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommandResponse"
+  /api/events:
+    get:
+      summary: List recent events
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 100
+      responses:
+        "200":
+          description: Event list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventListResponse"
+  /api/device/telemetry:
+    post:
+      summary: Device telemetry upload
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TelemetryInput"
+      responses:
+        "200":
+          description: Save result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OkResponse"
+  /api/device/photos:
+    post:
+      summary: Device photo upload
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - device_id
+                - image
+              properties:
+                device_id:
+                  type: string
+                  example: orange-pi-main
+                captured_at:
+                  type: string
+                  format: date-time
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Photo and recognition result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PhotoResponse"
+  /api/device/commands/pending:
+    get:
+      summary: Device pulls pending commands
+      parameters:
+        - name: device_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Pending commands
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommandListResponse"
+  /api/device/commands/{command_id}/ack:
+    post:
+      summary: Device acknowledges command execution
+      parameters:
+        - name: command_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CommandAck"
+      responses:
+        "200":
+          description: Ack result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OkResponse"
+components:
+  parameters:
+    PersonId:
+      name: person_id
+      in: path
+      required: true
+      schema:
+        type: string
+  schemas:
+    ApiError:
+      type: object
+      nullable: true
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+    HealthResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            status:
+              type: string
+              example: ok
+            version:
+              type: string
+              example: "0.1"
+        error:
+          $ref: "#/components/schemas/ApiError"
+    OkResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          example: true
+        data:
+          type: object
+          additionalProperties: true
+        error:
+          $ref: "#/components/schemas/ApiError"
+    Device:
+      type: object
+      required:
+        - id
+        - name
+        - type
+      properties:
+        id:
+          type: string
+          example: orange-pi-main
+        name:
+          type: string
+          example: Orange Pi Smart Home Gateway
+        type:
+          type: string
+          enum: [gateway, camera, door, light, fan]
+        online:
+          type: boolean
+        last_seen:
+          type: string
+          format: date-time
+    TelemetryInput:
+      type: object
+      required:
+        - device_id
+        - temperature_c
+      properties:
+        device_id:
+          type: string
+          example: orange-pi-main
+        captured_at:
+          type: string
+          format: date-time
+        temperature_c:
+          type: number
+          example: 28.4
+        door_open:
+          type: boolean
+          example: false
+        window_open:
+          type: boolean
+          example: true
+        light_level:
+          type: integer
+          minimum: 0
+          maximum: 100
+          example: 70
+        fan_on:
+          type: boolean
+          example: true
+    Telemetry:
+      allOf:
+        - $ref: "#/components/schemas/TelemetryInput"
+        - type: object
+          properties:
+            id:
+              type: string
+              example: tel_001
+    PersonCreate:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: Person A
+        role:
+          type: string
+          enum: [student, teacher, guest]
+          default: student
+        authorized:
+          type: boolean
+          default: true
+    PersonPatch:
+      type: object
+      properties:
+        name:
+          type: string
+        role:
+          type: string
+          enum: [student, teacher, guest]
+        authorized:
+          type: boolean
+    Person:
+      allOf:
+        - $ref: "#/components/schemas/PersonCreate"
+        - type: object
+          properties:
+            id:
+              type: string
+              example: person_001
+            face_enrolled:
+              type: boolean
+              example: true
+    RecognitionLabel:
+      type: object
+      properties:
+        label:
+          type: string
+          example: person
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+          example: 0.91
+    FaceResult:
+      type: object
+      properties:
+        matched_person_id:
+          type: string
+          nullable: true
+          example: person_001
+        matched_name:
+          type: string
+          nullable: true
+          example: Person A
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+          example: 0.86
+    Photo:
+      type: object
+      properties:
+        id:
+          type: string
+          example: photo_001
+        device_id:
+          type: string
+          example: orange-pi-main
+        captured_at:
+          type: string
+          format: date-time
+        file_url:
+          type: string
+          example: /uploads/photo_001.jpg
+        yolo_labels:
+          type: array
+          items:
+            $ref: "#/components/schemas/RecognitionLabel"
+        face_result:
+          $ref: "#/components/schemas/FaceResult"
+        access_decision:
+          type: string
+          enum: [allow, deny, unknown]
+    CommandCreate:
+      type: object
+      required:
+        - device_id
+        - type
+      properties:
+        device_id:
+          type: string
+          example: orange-pi-main
+        type:
+          type: string
+          enum: [SET_LIGHT, SET_FAN, OPEN_DOOR, CLOSE_DOOR, REQUEST_PHOTO]
+        payload:
+          type: object
+          additionalProperties: true
+          example:
+            level: 80
+    Command:
+      allOf:
+        - $ref: "#/components/schemas/CommandCreate"
+        - type: object
+          properties:
+            id:
+              type: string
+              example: cmd_001
+            status:
+              type: string
+              enum: [pending, sent, done, failed]
+            created_at:
+              type: string
+              format: date-time
+            executed_at:
+              type: string
+              format: date-time
+              nullable: true
+    CommandAck:
+      type: object
+      required:
+        - device_id
+        - status
+      properties:
+        device_id:
+          type: string
+          example: orange-pi-main
+        status:
+          type: string
+          enum: [done, failed]
+        message:
+          type: string
+          example: ok
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+          example: evt_001
+        type:
+          type: string
+          example: command_done
+        severity:
+          type: string
+          enum: [info, warning, error]
+        message:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    DeviceListResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Device"
+        error:
+          $ref: "#/components/schemas/ApiError"
+    TelemetryResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        data:
+          $ref: "#/components/schemas/Telemetry"
+        error:
+          $ref: "#/components/schemas/ApiError"
+    TelemetryListResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Telemetry"
+        error:
+          $ref: "#/components/schemas/ApiError"
+    PersonResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        data:
+          $ref: "#/components/schemas/Person"
+        error:
+          $ref: "#/components/schemas/ApiError"
+    PersonListResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Person"
+        error:
+          $ref: "#/components/schemas/ApiError"
+    FaceEnrollResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        data:
+          type: object
+          properties:
+            person_id:
+              type: string
+            face_enrolled:
+              type: boolean
+        error:
+          $ref: "#/components/schemas/ApiError"
+    PhotoResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        data:
+          $ref: "#/components/schemas/Photo"
+        error:
+          $ref: "#/components/schemas/ApiError"
+    PhotoListResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Photo"
+        error:
+          $ref: "#/components/schemas/ApiError"
+    CommandResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        data:
+          $ref: "#/components/schemas/Command"
+        error:
+          $ref: "#/components/schemas/ApiError"
+    CommandListResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Command"
+        error:
+          $ref: "#/components/schemas/ApiError"
+    EventListResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Event"
+        error:
+          $ref: "#/components/schemas/ApiError"

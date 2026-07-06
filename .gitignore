@@ -1,0 +1,32 @@
+# macOS
+.DS_Store
+
+# Personal or private class data
+分组名单.xlsx
+分组名单*.xlsx
+*名单*.xlsx
+
+# Local runtime data
+.env
+.env.*
+*.db
+*.sqlite
+*.sqlite3
+uploads/
+data/
+logs/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Node
+node_modules/
+dist/
+build/
+
+# Office temporary files
+~$*
+
