@@ -1,10 +1,11 @@
 openapi: 3.0.3
 info:
   title: Group 27 Smart Home Software API
-  version: 0.2.0
-  description: API contract for Group 27 smart home software team using Orange Pi / Huawei board as the device gateway.
+  version: 0.3.0
+  description: API contract for Group 27 smart home software team. Frontend/backend are deployed on the server, while Orange Pi works as the hardware gateway and runs YOLO locally.
 servers:
-  - url: http://localhost:8000
+  - url: http://82.156.238.244
+    description: Production server for frontend and backend API
 paths:
   /api/health:
     get:
@@ -206,7 +207,7 @@ paths:
                 $ref: "#/components/schemas/OkResponse"
   /api/device/photos:
     post:
-      summary: Device photo upload
+      summary: Device photo and Orange Pi YOLO result upload
       requestBody:
         required: true
         content:
@@ -216,6 +217,7 @@ paths:
               required:
                 - device_id
                 - image
+                - yolo_labels_json
               properties:
                 device_id:
                   type: string
@@ -226,9 +228,13 @@ paths:
                 image:
                   type: string
                   format: binary
+                yolo_labels_json:
+                  type: string
+                  description: JSON string of YOLO labels generated on Orange Pi. Use [] when no object is detected.
+                  example: '[{"label":"person","confidence":0.91},{"label":"light bulb","confidence":0.78}]'
       responses:
         "200":
-          description: Photo and recognition result
+          description: Saved photo and recognition result
           content:
             application/json:
               schema:
