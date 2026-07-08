@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>第27组智能家居验收台</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <link rel="icon" href="data:," />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">DnB26 · 第27组 · 物联 + 智科</p>
+        <h1>智能家居可交付验收台</h1>
+        <p class="topbar-copy">按老师要求完成 YOLO 目标识别、人脸识别、物联闭环、GUI 展示与历史记录。</p>
+      </div>
+      <div class="server-pill" id="health-pill">连接中</div>
+    </header>
+
+    <main class="layout">
+      <section class="status-grid" aria-label="当前智能家居状态">
+        <article class="metric">
+          <span class="metric-label">室内温度</span>
+          <strong id="temperature">--</strong>
+          <small id="fan-state">风扇 --</small>
+        </article>
+        <article class="metric">
+          <span class="metric-label">门禁状态</span>
+          <strong id="door-state">--</strong>
+          <small>人脸授权后可开门</small>
+        </article>
+        <article class="metric">
+          <span class="metric-label">窗户状态</span>
+          <strong id="window-state">--</strong>
+          <small>设备状态上报</small>
+        </article>
+        <article class="metric">
+          <span class="metric-label">灯光亮度</span>
+          <strong id="light-level">--</strong>
+          <small>灯泡识别联动</small>
+        </article>
+      </section>
+
+      <section class="requirement-strip" aria-label="作业要求覆盖">
+        <article>
+          <strong>YOLO 必做</strong>
+          <span>无人机 `drone`、灭火器 `fire_extinguisher`</span>
+        </article>
+        <article>
+          <strong>创新点</strong>
+          <span>灯泡 `light_bulb` 识别后生成 `SET_LIGHT level=80`</span>
+        </article>
+        <article>
+          <strong>人脸识别</strong>
+          <span>5 人录入、5 人未录入；最低演示 2 真 1 假</span>
+        </article>
+        <article>
+          <strong>物联闭环</strong>
+          <span>状态上报、命令下发、设备拉取、执行确认</span>
+        </article>
+      </section>
+
+      <section class="panel yolo-panel" id="yolo-panel">
+        <div class="panel-head">
+          <div>
+            <p class="section-kicker">Step 1 · YOLO 目标识别</p>
+            <h2>上传无人机、灭火器、灯泡图片</h2>
+            <p>这里专门测试老师要求的 YOLO 部分。灯泡识别成功会自动生成开灯命令；无人机和灭火器只展示识别结果。</p>
+          </div>
+          <div class="model-badge">YOLOv8m · 三类模型</div>
+        </div>
+
+        <div class="flow-strip" aria-label="YOLO 使用流程">
+          <span>1. 选择类别</span>
+          <span>2. 上传同类测试图</span>
+          <span>3. 运行 YOLO 识别</span>
+          <span>4. 查看标签、置信度和联动效果</span>
+        </div>
+
+        <div class="test-cards">
+          <button class="test-card" type="button" data-yolo-target="drone">
+            <span>无人机</span>
+            <strong>期望标签 drone</strong>
+            <small>用于安防/目标识别展示</small>
+          </button>
+          <button class="test-card" type="button" data-yolo-target="fire_extinguisher">
+            <span>灭火器</span>
+            <strong>期望标签 fire_extinguisher</strong>
+            <small>用于安全物品识别</small>
+          </button>
+          <button class="test-card active" type="button" data-yolo-target="light_bulb">
+            <span>灯泡</span>
+            <strong>期望标签 light_bulb</strong>
+            <small>成功后自动生成 SET_LIGHT 80</small>
+          </button>
+        </div>
+
+        <form id="yolo-form" class="upload-form yolo-upload">
+          <label>
+            当前测试类别
+            <select id="yolo-target">
+              <option value="drone">无人机 drone</option>
+              <option value="fire_extinguisher">灭火器 fire_extinguisher</option>
+              <option value="light_bulb" selected>灯泡 light_bulb</option>
+            </select>
+          </label>
+          <label>
+            上传对应图片
+            <input id="yolo-image-input" type="file" name="image" accept="image/*" required />
+          </label>
+          <button type="submit">运行 YOLO 识别</button>
+        </form>
+
+        <div class="quick-actions">
+          <button type="button" class="secondary" data-real-yolo-sample="drone">使用真实无人机样本</button>
+          <button type="button" class="secondary" data-real-yolo-sample="fire_extinguisher">使用真实灭火器样本</button>
+          <button type="button" class="secondary" data-real-yolo-sample="light_bulb">使用真实灯泡样本</button>
+          <span class="dataset-note">样本来自 <code>真实测试数据集\YOLO识别</code>，均为真实照片。</span>
+        </div>
+
+        <div class="preview-wrap yolo-result-grid">
+          <img id="yolo-preview" alt="YOLO 测试图片预览" />
+          <div>
+            <div id="yolo-verdict" class="verdict neutral">等待 YOLO 图片</div>
+            <div id="yolo-result" class="result-box">请先选择类别并上传对应测试照片。</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="dashboard-grid">
+        <section class="panel face-panel">
+          <div class="panel-head">
+            <div>
+              <p class="section-kicker">Step 2 · 人脸识别</p>
+              <h2>2 真 1 假 / 5 真 5 假验收</h2>
+              <p>这里测试真实 LFW 人脸照片。`P01-P05` 应允许，`U01-U05` 应拒绝。</p>
+            </div>
+            <button id="refresh-face-samples" class="secondary" type="button">刷新样本</button>
+          </div>
+
+          <div class="face-grid">
+            <div>
+              <h3>已录入人员</h3>
+              <ul id="registered-faces" class="command-list"></ul>
+            </div>
+            <form id="face-sample-form" class="face-verify-form">
+              <label>
+                选择老师验收样本
+                <select id="face-sample"></select>
+              </label>
+              <button type="submit">验证选中样本</button>
+              <div class="face-shortcuts" aria-label="2真1假快捷验收">
+                <button type="button" data-face-sample-id="P01_test">真 P01</button>
+                <button type="button" data-face-sample-id="P02_test">真 P02</button>
+                <button type="button" data-face-sample-id="U01_test" class="secondary">假 U01</button>
+              </div>
+              <p class="dataset-note">人脸样本另存于 <code>真实测试数据集\人脸识别</code>。</p>
+            </form>
+            <form id="face-upload-form" class="face-verify-form">
+              <label>
+                上传自选人脸照片
+                <input id="face-upload-input" type="file" accept="image/*" />
+              </label>
+              <button type="submit">上传并验证</button>
+            </form>
+          </div>
+
+          <div class="face-result-wrap">
+            <img id="face-preview" alt="人脸样本预览" />
+            <div>
+              <div id="face-verdict" class="verdict neutral">等待人脸验证</div>
+              <div id="face-result" class="result-box">建议演示顺序：P01 allow、P02 allow、U01 deny。</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel controls-panel">
+          <div class="panel-head">
+            <div>
+              <p class="section-kicker">Step 3 · 物联控制</p>
+              <h2>设备命令与手动控制</h2>
+              <p>GUI 写入控制命令，硬件按接口拉取并确认执行。</p>
+            </div>
+          </div>
+
+          <div class="control-grid">
+            <button data-device="door" data-action="open" type="button">开门</button>
+            <button data-device="door" data-action="close" type="button" class="secondary">关门</button>
+            <button data-device="light" data-action="turn_on" data-value="80" type="button">开灯 80</button>
+            <button data-device="light" data-action="turn_off" data-value="0" type="button" class="secondary">关灯</button>
+            <button data-device="fan" data-action="turn_on" type="button">开风扇</button>
+            <button data-device="fan" data-action="turn_off" type="button" class="secondary">关风扇</button>
+          </div>
+
+          <label class="slider-row">
+            灯光亮度
+            <input id="brightness" type="range" min="0" max="100" value="80" />
+            <span id="brightness-value">80%</span>
+          </label>
+          <button id="send-brightness" class="wide-button" type="button">发送亮度命令</button>
+          <button id="simulate-sensor" class="wide-button secondary" type="button">模拟传感器更新</button>
+
+          <div>
+            <h3>待执行命令</h3>
+            <ul id="pending-commands" class="command-list"></ul>
+          </div>
+        </section>
+      </section>
+
+      <section class="panel iot-panel">
+        <div class="panel-head">
+          <div>
+            <p class="section-kicker">Step 4 · 物联闭环</p>
+            <h2>状态上报、命令下发、设备确认</h2>
+            <p>这一区域按硬件接口完整演示：设备上报状态，系统下发命令，硬件拉取并 ack，事件流留痕。</p>
+          </div>
+          <button id="refresh-iot" class="secondary" type="button">刷新物联状态</button>
+        </div>
+
+        <div class="iot-grid">
+          <div>
+            <h3>设备列表</h3>
+            <ul id="iot-devices" class="command-list"></ul>
+          </div>
+          <div>
+            <h3>最新上报</h3>
+            <div id="iot-latest" class="result-box compact">等待设备状态</div>
+          </div>
+          <div>
+            <h3>闭环操作</h3>
+            <div class="iot-actions">
+              <button id="iot-telemetry-demo" type="button">1. 上报一条状态</button>
+              <button id="iot-command-demo" type="button">2. 下发开灯命令</button>
+              <button id="iot-ack-demo" class="secondary" type="button">3. 设备确认执行</button>
+            </div>
+          </div>
+        </div>
+
+        <h3>最近事件</h3>
+        <ul id="iot-events" class="event-list"></ul>
+      </section>
+
+      <section class="panel history-panel">
+        <div class="panel-head">
+          <div>
+            <p class="section-kicker">Step 5 · 交付记录</p>
+            <h2>历史数据与分析</h2>
+            <p>传感器、图片识别、控制命令和事件流都会保存，方便答辩展示。</p>
+          </div>
+          <select id="history-kind">
+            <option value="sensors">传感器历史</option>
+            <option value="images">图片识别历史</option>
+            <option value="commands">控制命令历史</option>
+            <option value="events">事件流</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead id="history-head"></thead>
+            <tbody id="history-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <div id="toast" class="toast" role="status"></div>
+    <script src="/static/app.js"></script>
+  </body>
+</html>

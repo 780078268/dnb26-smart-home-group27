@@ -1,0 +1,151 @@
+{
+  "source": "LFW / Labeled Faces in the Wild, lfw-funneled",
+  "source_url": "https://ndownloader.figshare.com/files/5976015",
+  "registered_people": [
+    {
+      "person_id": "P01",
+      "name": "Ron Dittemore",
+      "lfw_name": "Ron_Dittemore"
+    },
+    {
+      "person_id": "P02",
+      "name": "Kim Jong-Il",
+      "lfw_name": "Kim_Jong-Il"
+    },
+    {
+      "person_id": "P03",
+      "name": "Intisar Ajouri",
+      "lfw_name": "Intisar_Ajouri"
+    },
+    {
+      "person_id": "P04",
+      "name": "Petria Thomas",
+      "lfw_name": "Petria_Thomas"
+    },
+    {
+      "person_id": "P05",
+      "name": "Michael Winterbottom",
+      "lfw_name": "Michael_Winterbottom"
+    }
+  ],
+  "unknown_people": [
+    {
+      "sample_id": "U01_test",
+      "name": "James Brosnahan",
+      "lfw_name": "James_Brosnahan"
+    },
+    {
+      "sample_id": "U02_test",
+      "name": "Enrica Fico",
+      "lfw_name": "Enrica_Fico"
+    },
+    {
+      "sample_id": "U03_test",
+      "name": "Edith Masai",
+      "lfw_name": "Edith_Masai"
+    },
+    {
+      "sample_id": "U04_test",
+      "name": "Reyyan Uzuner",
+      "lfw_name": "Reyyan_Uzuner"
+    },
+    {
+      "sample_id": "U05_test",
+      "name": "Carin Koch",
+      "lfw_name": "Carin_Koch"
+    }
+  ],
+  "samples": [
+    {
+      "sample_id": "P01_test",
+      "kind": "authorized",
+      "person_id": "P01",
+      "name": "Ron Dittemore",
+      "lfw_name": "Ron_Dittemore",
+      "expected_decision": "allow",
+      "relative_path": "authorized/P01_test.jpg"
+    },
+    {
+      "sample_id": "P02_test",
+      "kind": "authorized",
+      "person_id": "P02",
+      "name": "Kim Jong-Il",
+      "lfw_name": "Kim_Jong-Il",
+      "expected_decision": "allow",
+      "relative_path": "authorized/P02_test.jpg"
+    },
+    {
+      "sample_id": "P03_test",
+      "kind": "authorized",
+      "person_id": "P03",
+      "name": "Intisar Ajouri",
+      "lfw_name": "Intisar_Ajouri",
+      "expected_decision": "allow",
+      "relative_path": "authorized/P03_test.jpg"
+    },
+    {
+      "sample_id": "P04_test",
+      "kind": "authorized",
+      "person_id": "P04",
+      "name": "Petria Thomas",
+      "lfw_name": "Petria_Thomas",
+      "expected_decision": "allow",
+      "relative_path": "authorized/P04_test.jpg"
+    },
+    {
+      "sample_id": "P05_test",
+      "kind": "authorized",
+      "person_id": "P05",
+      "name": "Michael Winterbottom",
+      "lfw_name": "Michael_Winterbottom",
+      "expected_decision": "allow",
+      "relative_path": "authorized/P05_test.jpg"
+    },
+    {
+      "sample_id": "U01_test",
+      "kind": "unknown",
+      "person_id": null,
+      "name": "James Brosnahan",
+      "lfw_name": "James_Brosnahan",
+      "expected_decision": "deny",
+      "relative_path": "unknown/U01_test.jpg"
+    },
+    {
+      "sample_id": "U02_test",
+      "kind": "unknown",
+      "person_id": null,
+      "name": "Enrica Fico",
+      "lfw_name": "Enrica_Fico",
+      "expected_decision": "deny",
+      "relative_path": "unknown/U02_test.jpg"
+    },
+    {
+      "sample_id": "U03_test",
+      "kind": "unknown",
+      "person_id": null,
+      "name": "Edith Masai",
+      "lfw_name": "Edith_Masai",
+      "expected_decision": "deny",
+      "relative_path": "unknown/U03_test.jpg"
+    },
+    {
+      "sample_id": "U04_test",
+      "kind": "unknown",
+      "person_id": null,
+      "name": "Reyyan Uzuner",
+      "lfw_name": "Reyyan_Uzuner",
+      "expected_decision": "deny",
+      "relative_path": "unknown/U04_test.jpg"
+    },
+    {
+      "sample_id": "U05_test",
+      "kind": "unknown",
+      "person_id": null,
+      "name": "Carin Koch",
+      "lfw_name": "Carin_Koch",
+      "expected_decision": "deny",
+      "relative_path": "unknown/U05_test.jpg"
+    }
+  ],
+  "threshold": 0.5481
+}

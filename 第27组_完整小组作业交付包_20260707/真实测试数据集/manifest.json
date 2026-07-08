@@ -1,0 +1,262 @@
+{
+  "dataset_dir": "真实测试数据集",
+  "yolo_samples": [
+    {
+      "expected_label": "drone",
+      "source_title": "File:Quadcopter Drone in flight.jpg",
+      "candidate_path": "data\\real_yolo_candidates\\drone\\drone_04_Quadcopter_Drone_in_flight.jpg.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Quadcopter_Drone_in_flight.jpg",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Quadcopter_Drone_in_flight.jpg/960px-Quadcopter_Drone_in_flight.jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "<a href=\"//commons.wikimedia.org/wiki/User:Keita.Honda\" title=\"User:Keita.Honda\">Project Kei</a>",
+      "detected_labels": [
+        {
+          "label": "drone",
+          "confidence": 0.8937
+        }
+      ],
+      "engine": "group27-yolov8m-custom",
+      "expected_confidence": 0.8937,
+      "demo_file": "真实测试数据集\\YOLO识别\\无人机\\无人机_drone_01.jpg",
+      "public_url": "/real-samples/YOLO识别/无人机/无人机_drone_01.jpg",
+      "rank": 1
+    },
+    {
+      "expected_label": "drone",
+      "source_title": "File:DJI Phantom 4K drone in action.jpg",
+      "candidate_path": "data\\real_yolo_candidates\\drone\\drone_02_DJI_Phantom_4K_drone_in_action.jpg.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:DJI_Phantom_4K_drone_in_action.jpg",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/DJI_Phantom_4K_drone_in_action.jpg/960px-DJI_Phantom_4K_drone_in_action.jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "<a href=\"//commons.wikimedia.org/wiki/User:Suyash.dwivedi\" title=\"User:Suyash.dwivedi\">Suyash Dwivedi</a>",
+      "detected_labels": [
+        {
+          "label": "drone",
+          "confidence": 0.85
+        }
+      ],
+      "engine": "demo-yolo-compatible",
+      "expected_confidence": 0.85,
+      "demo_file": "真实测试数据集\\YOLO识别\\无人机\\无人机_drone_02.jpg",
+      "public_url": "/real-samples/YOLO识别/无人机/无人机_drone_02.jpg",
+      "rank": 2
+    },
+    {
+      "expected_label": "drone",
+      "source_title": "File:DJI Phantom 4 Drone (32285759641).jpg",
+      "candidate_path": "data\\real_yolo_candidates\\drone\\drone_03_DJI_Phantom_4_Drone_32285759641_.jpg.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:DJI_Phantom_4_Drone_(32285759641).jpg",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/DJI_Phantom_4_Drone_%2832285759641%29.jpg/960px-DJI_Phantom_4_Drone_%2832285759641%29.jpg",
+      "license": "CC BY-SA 2.0",
+      "artist": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.flickr.com/people/87296837@N00\">Tony Webster</a> from Minneapolis, Minnesota, United States",
+      "detected_labels": [
+        {
+          "label": "drone",
+          "confidence": 0.84
+        }
+      ],
+      "engine": "demo-yolo-compatible",
+      "expected_confidence": 0.84,
+      "demo_file": "真实测试数据集\\YOLO识别\\无人机\\无人机_drone_03.jpg",
+      "public_url": "/real-samples/YOLO识别/无人机/无人机_drone_03.jpg",
+      "rank": 3
+    },
+    {
+      "expected_label": "fire_extinguisher",
+      "source_title": "File:Doorstop fire extinguisher, Xavier University New Orleans.jpg",
+      "candidate_path": "data\\real_yolo_candidates\\fire_extinguisher\\fire_extinguisher_02_Doorstop_fire_extinguisher_Xavier_University_New_Orleans.jpg.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Doorstop_fire_extinguisher,_Xavier_University_New_Orleans.jpg",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Doorstop_fire_extinguisher%2C_Xavier_University_New_Orleans.jpg/960px-Doorstop_fire_extinguisher%2C_Xavier_University_New_Orleans.jpg",
+      "license": "CC BY 2.0",
+      "artist": "Bart Everson",
+      "detected_labels": [
+        {
+          "label": "fire_extinguisher",
+          "confidence": 0.85
+        }
+      ],
+      "engine": "demo-yolo-compatible",
+      "expected_confidence": 0.85,
+      "demo_file": "真实测试数据集\\YOLO识别\\灭火器\\灭火器_fire_extinguisher_01.jpg",
+      "public_url": "/real-samples/YOLO识别/灭火器/灭火器_fire_extinguisher_01.jpg",
+      "rank": 1
+    },
+    {
+      "expected_label": "fire_extinguisher",
+      "source_title": "File:Fire extinguisher (40242871690).jpg",
+      "candidate_path": "data\\real_yolo_candidates\\fire_extinguisher\\fire_extinguisher_03_Fire_extinguisher_40242871690_.jpg.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Fire_extinguisher_(40242871690).jpg",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/Fire_extinguisher_%2840242871690%29.jpg/960px-Fire_extinguisher_%2840242871690%29.jpg",
+      "license": "CC BY 2.0",
+      "artist": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.flickr.com/people/24431382@N03\">Eric Fischer</a>",
+      "detected_labels": [
+        {
+          "label": "fire_extinguisher",
+          "confidence": 0.84
+        }
+      ],
+      "engine": "demo-yolo-compatible",
+      "expected_confidence": 0.84,
+      "demo_file": "真实测试数据集\\YOLO识别\\灭火器\\灭火器_fire_extinguisher_02.jpg",
+      "public_url": "/real-samples/YOLO识别/灭火器/灭火器_fire_extinguisher_02.jpg",
+      "rank": 2
+    },
+    {
+      "expected_label": "fire_extinguisher",
+      "source_title": "File:Fire extinguisher in Germany.JPG",
+      "candidate_path": "data\\real_yolo_candidates\\fire_extinguisher\\fire_extinguisher_04_Fire_extinguisher_in_Germany.JPG.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Fire_extinguisher_in_Germany.JPG",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Fire_extinguisher_in_Germany.JPG/960px-Fire_extinguisher_in_Germany.JPG",
+      "license": "CC BY 3.0 de",
+      "artist": "<a href=\"//commons.wikimedia.org/wiki/User:High_Contrast\" title=\"User:High Contrast\">High Contrast</a>",
+      "detected_labels": [
+        {
+          "label": "fire_extinguisher",
+          "confidence": 0.84
+        }
+      ],
+      "engine": "demo-yolo-compatible",
+      "expected_confidence": 0.84,
+      "demo_file": "真实测试数据集\\YOLO识别\\灭火器\\灭火器_fire_extinguisher_03.jpg",
+      "public_url": "/real-samples/YOLO识别/灭火器/灭火器_fire_extinguisher_03.jpg",
+      "rank": 3
+    },
+    {
+      "expected_label": "light_bulb",
+      "source_title": "File:Light Bulb (130919449).jpeg",
+      "candidate_path": "data\\real_yolo_candidates\\light_bulb\\light_bulb_03_Light_Bulb_130919449_.jpeg.jpeg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Light_Bulb_(130919449).jpeg",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Light_Bulb_%28130919449%29.jpeg/960px-Light_Bulb_%28130919449%29.jpeg",
+      "license": "CC BY-SA 3.0",
+      "artist": "<div class=\"fn value\">\n<a rel=\"nofollow\" class=\"external text\" href=\"https://500px.com/marsietis55\">Mārtiņš Akmanis</a></div>",
+      "detected_labels": [
+        {
+          "label": "light_bulb",
+          "confidence": 0.9258
+        }
+      ],
+      "engine": "group27-yolov8m-custom",
+      "expected_confidence": 0.9258,
+      "demo_file": "真实测试数据集\\YOLO识别\\灯泡\\灯泡_light_bulb_01.jpeg",
+      "public_url": "/real-samples/YOLO识别/灯泡/灯泡_light_bulb_01.jpeg",
+      "rank": 1
+    },
+    {
+      "expected_label": "light_bulb",
+      "source_title": "File:LED-E27-Light-Bulb-1134.jpg",
+      "candidate_path": "data\\real_yolo_candidates\\light_bulb\\light_bulb_02_LED-E27-Light-Bulb-1134.jpg.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:LED-E27-Light-Bulb-1134.jpg",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/LED-E27-Light-Bulb-1134.jpg/960px-LED-E27-Light-Bulb-1134.jpg",
+      "license": "CC BY-SA 4.0",
+      "artist": "<p><a href=\"//commons.wikimedia.org/wiki/User:Loadmaster\" title=\"User:Loadmaster\">Loadmaster</a> (David R. Tribble)\n</p>\n<table style=\"margin:1.5em auto; width:80%; background-color:#CCCCCC; border:2px solid #AAAAAA; padding:1px;\" cellspacing=\"10\">\n\n<tbody><tr>\n<td align=\"center\"><span typeof=\"mw:File\"><a href=\"//commons.wikimedia.org/wiki/File:PylonsSunset-5982.jpg\" class=\"mw-file-description\"><img src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/PylonsSunset-5982.jpg/120px-PylonsSunset-5982.jpg\" decoding=\"async\" width=\"101\" height=\"67\" class=\"mw-file-element\" srcset=\"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/PylonsSunset-5982.jpg/250px-PylonsSunset-5982.jpg 2x\" data-file-width=\"2816\" data-file-height=\"1872\"></a></span>\n</td>\n<td><i><a href=\"https://upload.wikimedia.org/wikipedia/commons/d/d6/LED-E27-Light-Bulb-1134.jpg\" class=\"internal\" title=\"LED-E27-Light-Bulb-1134.jpg\"><b>This image</b></a> <b>was made by</b> </i><b><a href=\"//commons.wikimedia.org/wiki/User:Loadmaster\" title=\"User:Loadmaster\"><b>Loadmaster (David R. Tribble)</b></a></b><i>.</i>\n<p>Email the author: <span typeof=\"mw:File\"><a href=\"//commons.wikimedia.org/wiki/File:UserIconMail.svg\" class=\"mw-file-description\"><img src=\"https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/UserIconMail.svg/40px-UserIconMail.svg.png\" decoding=\"async\" width=\"24\" height=\"24\" class=\"mw-file-element\" srcset=\"https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/UserIconMail.svg/60px-UserIconMail.svg.png 2x\" data-file-width=\"700\" data-file-height=\"700\"></a></span> <a href=\"//commons.wikimedia.org/wiki/Special:EmailUser/Loadmaster\" title=\"Special:EmailUser/Loadmaster\">David R. Tribble</a>\n</p><p>Also see my personal gallery at <a rel=\"nofollow\" class=\"external text\" href=\"https://get.google.com/albumarchive/116781016251009423557\">Google Photos</a>\n</p>\n</td></tr></tbody></table>",
+      "detected_labels": [
+        {
+          "label": "light_bulb",
+          "confidence": 0.9031
+        }
+      ],
+      "engine": "group27-yolov8m-custom",
+      "expected_confidence": 0.9031,
+      "demo_file": "真实测试数据集\\YOLO识别\\灯泡\\灯泡_light_bulb_02.jpg",
+      "public_url": "/real-samples/YOLO识别/灯泡/灯泡_light_bulb_02.jpg",
+      "rank": 2
+    },
+    {
+      "expected_label": "light_bulb",
+      "source_title": "File:Light bulb (3014150328).jpg",
+      "candidate_path": "data\\real_yolo_candidates\\light_bulb\\light_bulb_04_Light_bulb_3014150328_.jpg.jpg",
+      "source_page": "https://commons.wikimedia.org/wiki/File:Light_bulb_(3014150328).jpg",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Light_bulb_%283014150328%29.jpg/960px-Light_bulb_%283014150328%29.jpg",
+      "license": "CC BY 2.0",
+      "artist": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.flickr.com/people/23307937@N04\">frankieleon</a>",
+      "detected_labels": [
+        {
+          "label": "light_bulb",
+          "confidence": 0.9
+        }
+      ],
+      "engine": "demo-yolo-compatible",
+      "expected_confidence": 0.9,
+      "demo_file": "真实测试数据集\\YOLO识别\\灯泡\\灯泡_light_bulb_03.jpg",
+      "public_url": "/real-samples/YOLO识别/灯泡/灯泡_light_bulb_03.jpg",
+      "rank": 3
+    }
+  ],
+  "face_samples": [
+    {
+      "sample_id": "P01_test",
+      "name": "Ron Dittemore",
+      "expected_decision": "allow",
+      "demo_file": "真实测试数据集\\人脸识别\\已录入人员_应允许\\P01_test_Ron_Dittemore.jpg",
+      "source": "LFW funneled public face dataset"
+    },
+    {
+      "sample_id": "P02_test",
+      "name": "Kim Jong-Il",
+      "expected_decision": "allow",
+      "demo_file": "真实测试数据集\\人脸识别\\已录入人员_应允许\\P02_test_Kim_Jong-Il.jpg",
+      "source": "LFW funneled public face dataset"
+    },
+    {
+      "sample_id": "P03_test",
+      "name": "Intisar Ajouri",
+      "expected_decision": "allow",
+      "demo_file": "真实测试数据集\\人脸识别\\已录入人员_应允许\\P03_test_Intisar_Ajouri.jpg",
+      "source": "LFW funneled public face dataset"
+    },
+    {
+      "sample_id": "P04_test",
+      "name": "Petria Thomas",
+      "expected_decision": "allow",
+      "demo_file": "真实测试数据集\\人脸识别\\已录入人员_应允许\\P04_test_Petria_Thomas.jpg",
+      "source": "LFW funneled public face dataset"
+    },
+    {
+      "sample_id": "P05_test",
+      "name": "Michael Winterbottom",
+      "expected_decision": "allow",
+      "demo_file": "真实测试数据集\\人脸识别\\已录入人员_应允许\\P05_test_Michael_Winterbottom.jpg",
+      "source": "LFW funneled public face dataset"
+    },
+    {
+      "sample_id": "U01_test",
+      "name": "James Brosnahan",
+      "expected_decision": "deny",
+      "demo_file": "真实测试数据集\\人脸识别\\未录入人员_应拒绝\\U01_test_James_Brosnahan.jpg",
+      "source": "LFW funneled public face dataset"
+    },
+    {
+      "sample_id": "U02_test",
+      "name": "Enrica Fico",
+      "expected_decision": "deny",
+      "demo_file": "真实测试数据集\\人脸识别\\未录入人员_应拒绝\\U02_test_Enrica_Fico.jpg",
+      "source": "LFW funneled public face dataset"
+    },
+    {
+      "sample_id": "U03_test",
+      "name": "Edith Masai",
+      "expected_decision": "deny",
+      "demo_file": "真实测试数据集\\人脸识别\\未录入人员_应拒绝\\U03_test_Edith_Masai.jpg",
+      "source": "LFW funneled public face dataset"
+    },
+    {
+      "sample_id": "U04_test",
+      "name": "Reyyan Uzuner",
+      "expected_decision": "deny",
+      "demo_file": "真实测试数据集\\人脸识别\\未录入人员_应拒绝\\U04_test_Reyyan_Uzuner.jpg",
+      "source": "LFW funneled public face dataset"
+    },
+    {
+      "sample_id": "U05_test",
+      "name": "Carin Koch",
+      "expected_decision": "deny",
+      "demo_file": "真实测试数据集\\人脸识别\\未录入人员_应拒绝\\U05_test_Carin_Koch.jpg",
+      "source": "LFW funneled public face dataset"
+    }
+  ],
+  "gui_samples": {
+    "drone": "/real-samples/YOLO识别/无人机/无人机_drone_01.jpg",
+    "fire_extinguisher": "/real-samples/YOLO识别/灭火器/灭火器_fire_extinguisher_01.jpg",
+    "light_bulb": "/real-samples/YOLO识别/灯泡/灯泡_light_bulb_01.jpeg"
+  }
+}

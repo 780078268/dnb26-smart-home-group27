@@ -1,0 +1,8 @@
+{
+  "person_id": "P02",
+  "name": "Kim Jong-Il",
+  "role": "authorized-demo",
+  "authorized": true,
+  "source": "LFW",
+  "lfw_name": "Kim_Jong-Il"
+}
