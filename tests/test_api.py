@@ -110,13 +110,37 @@ def test_person_photo_yolo_command_flow(client):
             data={
                 "device_id": "orange-pi-main",
                 "yolo_labels_json": '[{"label":"person","confidence":0.91},{"label":"light bulb","confidence":0.78}]',
+                "source": "auto_face",
             },
             files={"image": ("photo.jpg", SAMPLE_JPEG, "image/jpeg")},
         )
     )
     assert photo["access_decision"] == "allow"
     assert photo["yolo_labels"][0]["label"] == "person"
-    assert photo["file_url"].startswith("/uploads/photos/")
+    assert photo["file_url"].startswith("/uploads/latest/")
+    assert photo["history_saved"] is True
+    assert photo["history_file_url"].startswith("/uploads/photos/")
+
+    latest_photo = assert_ok(client.get("/api/photos/latest", params={"device_id": "orange-pi-main"}))
+    assert latest_photo["file_url"] == photo["file_url"]
+    assert latest_photo["source"] == "auto_face"
+
+    duplicate_photo = assert_ok(
+        client.post(
+            "/api/device/photos",
+            data={
+                "device_id": "orange-pi-main",
+                "yolo_labels_json": '[{"label":"person","confidence":0.92}]',
+                "source": "auto_face",
+            },
+            files={"image": ("photo.jpg", SAMPLE_JPEG, "image/jpeg")},
+        )
+    )
+    assert duplicate_photo["history_saved"] is False
+
+    historical_photos = assert_ok(client.get("/api/photos", params={"limit": 10}))
+    assert len(historical_photos) == 1
+    assert historical_photos[0]["event_key"].startswith("face:person:")
 
     created = assert_ok(
         client.post(
@@ -144,3 +168,55 @@ def test_person_photo_yolo_command_flow(client):
 
     events = assert_ok(client.get("/api/events", params={"limit": 20}))
     assert any(event["type"] == "command_done" for event in events)
+
+
+def test_active_detection_command_and_event_upload(client):
+    command = assert_ok(
+        client.post(
+            "/api/commands",
+            json={
+                "device_id": "orange-pi-main",
+                "type": "REQUEST_DETECT_DRONE",
+                "payload": {"target": "drone", "upload_mode": "event"},
+            },
+        )
+    )
+    assert command["status"] == "pending"
+
+    pending = assert_ok(
+        client.get("/api/device/commands/pending", params={"device_id": "orange-pi-main"})
+    )
+    assert any(item["type"] == "REQUEST_DETECT_DRONE" for item in pending)
+
+    result = assert_ok(
+        client.post(
+            "/api/device/photos",
+            data={
+                "device_id": "orange-pi-main",
+                "yolo_labels_json": '[{"label":"drone","confidence":0.88}]',
+                "source": "drone",
+                "mode": "event",
+            },
+            files={"image": ("drone.jpg", SAMPLE_JPEG, "image/jpeg")},
+        )
+    )
+    assert result["history_saved"] is True
+    assert result["event_key"] == "active:drone:drone"
+
+    duplicate = assert_ok(
+        client.post(
+            "/api/device/photos",
+            data={
+                "device_id": "orange-pi-main",
+                "yolo_labels_json": '[{"label":"drone","confidence":0.89}]',
+                "source": "drone",
+                "mode": "event",
+            },
+            files={"image": ("drone.jpg", SAMPLE_JPEG, "image/jpeg")},
+        )
+    )
+    assert duplicate["history_saved"] is False
+
+    history = assert_ok(client.get("/api/photos", params={"limit": 10}))
+    assert len(history) == 1
+    assert history[0]["source"] == "drone"

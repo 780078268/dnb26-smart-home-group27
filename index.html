@@ -288,12 +288,22 @@
                 </div>
 
                 <div class="saas-card rounded-xl p-6 lg:col-span-7 flex flex-col space-y-6">
-                    <div class="flex justify-between items-center border-b border-white/[0.04] pb-4">
+                    <div class="flex justify-between items-center border-b border-white/[0.04] pb-4 gap-3">
                         <h3 class="text-xs font-mono font-medium tracking-wider uppercase text-white/80">视觉识别画面</h3>
-                        <button type="button" onclick="fetchPhotos()" aria-label="刷新识别图片" class="text-xs font-mono text-accent-cyber hover:opacity-80 flex items-center space-x-1.5 transition-opacity">
-                            <i data-lucide="refresh-cw" class="w-3 h-3"></i>
-                            <span>刷新</span>
-                        </button>
+                        <div class="flex flex-wrap items-center justify-end gap-2">
+                            <button type="button" onclick="requestDetection('fire_extinguisher')" class="px-3 py-1.5 rounded bg-white/[0.04] text-white/70 hover:text-white hover:bg-white/[0.08] border border-white/[0.08] text-xs font-mono transition-colors flex items-center space-x-1.5">
+                                <i data-lucide="flame" class="w-3 h-3 text-accent-crimson"></i>
+                                <span>识别灭火器</span>
+                            </button>
+                            <button type="button" onclick="requestDetection('drone')" class="px-3 py-1.5 rounded bg-white/[0.04] text-white/70 hover:text-white hover:bg-white/[0.08] border border-white/[0.08] text-xs font-mono transition-colors flex items-center space-x-1.5">
+                                <i data-lucide="plane" class="w-3 h-3 text-accent-cyber"></i>
+                                <span>识别无人机</span>
+                            </button>
+                            <button type="button" onclick="fetchPhotos()" aria-label="刷新识别图片" class="text-xs font-mono text-accent-cyber hover:opacity-80 flex items-center space-x-1.5 transition-opacity">
+                                <i data-lucide="refresh-cw" class="w-3 h-3"></i>
+                                <span>刷新</span>
+                            </button>
+                        </div>
                     </div>
                     
                     <div class="aspect-[16/9] w-full bg-dark-950 rounded-lg border border-white/[0.04] overflow-hidden relative flex items-center justify-center">
@@ -479,9 +489,13 @@
             }[char]));
         }
 
-        function resolveAssetUrl(url) {
+        function resolveAssetUrl(url, timestamp) {
             if (!url) return '';
-            return new URL(url, API_ORIGIN).href;
+            const assetUrl = new URL(url, API_ORIGIN);
+            if (assetUrl.pathname.includes('/uploads/latest/')) {
+                assetUrl.searchParams.set('t', Date.parse(timestamp) || Date.now());
+            }
+            return assetUrl.href;
         }
 
         function formatTime(isoString) {
@@ -500,6 +514,11 @@
             const labels = {
                 person: '人员',
                 'light bulb': '灯泡',
+                fire_extinguisher: '灭火器',
+                'fire extinguisher': '灭火器',
+                extinguisher: '灭火器',
+                drone: '无人机',
+                uav: '无人机',
                 light: '灯光',
                 fan: '风扇',
                 door: '门',
@@ -629,9 +648,22 @@
                 SET_LIGHT: '设置灯光',
                 SET_FAN: '切换风扇',
                 OPEN_DOOR: '远程开锁',
-                CLOSE_DOOR: '远程上锁'
+                CLOSE_DOOR: '远程上锁',
+                REQUEST_PHOTO: '请求拍照',
+                REQUEST_DETECT_FIRE_EXTINGUISHER: '识别灭火器',
+                REQUEST_DETECT_DRONE: '识别无人机'
             };
             return labels[type] || type;
+        }
+
+        function requestDetection(target) {
+            const commandMap = {
+                fire_extinguisher: 'REQUEST_DETECT_FIRE_EXTINGUISHER',
+                drone: 'REQUEST_DETECT_DRONE'
+            };
+            const commandType = commandMap[target];
+            if (!commandType) return;
+            sendControl(commandType, { target, upload_mode: 'event' });
         }
 
         async function sendControl(type, payload = {}) {
@@ -656,7 +688,7 @@
         }
 
         async function fetchPhotos() {
-            const data = await fetchData('/photos?limit=1', 'photos');
+            const data = await fetchData(`/photos/latest?device_id=${encodeURIComponent(DEVICE_ID)}`, 'photos');
             const imgEl = document.getElementById('latest-photo');
             const placeholder = document.getElementById('photo-placeholder');
             const yoloContainer = document.getElementById('yolo-labels');
@@ -664,7 +696,8 @@
             const placeholderTitle = document.getElementById('photo-placeholder-title');
             const placeholderDetail = document.getElementById('photo-placeholder-detail');
 
-            if (!data?.ok || !data.data.length) {
+            const photo = Array.isArray(data?.data) ? data.data[0] : data?.data;
+            if (!data?.ok || !photo?.file_url) {
                 imgEl.classList.add('hidden');
                 placeholder.classList.remove('hidden');
                 placeholderTitle.innerText = '暂无识别画面';
@@ -675,9 +708,8 @@
                 return;
             }
 
-            const photo = data.data[0];
             if (photo.file_url) {
-                const assetUrl = resolveAssetUrl(photo.file_url);
+                const assetUrl = resolveAssetUrl(photo.file_url, photo.updated_at || photo.captured_at);
                 imgEl.src = assetUrl;
                 imgEl.onload = () => {
                     imgEl.classList.remove('hidden');

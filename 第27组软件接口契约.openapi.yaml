@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Group 27 Smart Home Software API
-  version: 0.3.0
+  version: 0.4.0
   description: API contract for Group 27 smart home software team. Frontend/backend are deployed on the server, while Orange Pi works as the hardware gateway and runs YOLO locally.
 servers:
   - url: http://82.156.238.244
@@ -143,7 +143,7 @@ paths:
                 $ref: "#/components/schemas/FaceEnrollResponse"
   /api/photos:
     get:
-      summary: List photos and recognition results
+      summary: List historical recognition event photos
       parameters:
         - name: limit
           in: query
@@ -157,6 +157,22 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PhotoListResponse"
+  /api/photos/latest:
+    get:
+      summary: Get latest recognition result for realtime display
+      parameters:
+        - name: device_id
+          in: query
+          schema:
+            type: string
+            default: orange-pi-main
+      responses:
+        "200":
+          description: Latest recognition result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PhotoResponse"
   /api/commands:
     post:
       summary: Create a remote control command
@@ -207,7 +223,7 @@ paths:
                 $ref: "#/components/schemas/OkResponse"
   /api/device/photos:
     post:
-      summary: Device photo and Orange Pi YOLO result upload
+      summary: Device photo and Orange Pi recognition result upload
       requestBody:
         required: true
         content:
@@ -232,6 +248,24 @@ paths:
                   type: string
                   description: JSON string of YOLO labels generated on Orange Pi. Use [] when no object is detected.
                   example: '[{"label":"person","confidence":0.91},{"label":"light bulb","confidence":0.78}]'
+                face_result_json:
+                  type: string
+                  description: Optional JSON string of face recognition result generated on Orange Pi.
+                  example: '{"matched_person_id":"person_001","matched_name":"张三","confidence":0.86}'
+                access_decision:
+                  type: string
+                  enum: [allow, deny, unknown]
+                  description: Optional face access decision from Orange Pi.
+                source:
+                  type: string
+                  enum: [auto_face, fire_extinguisher, drone]
+                  default: auto_face
+                  description: auto_face for 0.5s face loop; fire_extinguisher/drone for active frontend-triggered detection.
+                mode:
+                  type: string
+                  enum: [latest, event]
+                  default: latest
+                  description: latest overwrites realtime result; event is used for active detection and still goes through 5s dedup.
       responses:
         "200":
           description: Saved photo and recognition result
@@ -448,7 +482,7 @@ components:
       properties:
         id:
           type: string
-          example: photo_001
+          example: latest_orange-pi-main
         device_id:
           type: string
           example: orange-pi-main
@@ -457,7 +491,7 @@ components:
           format: date-time
         file_url:
           type: string
-          example: /uploads/photo_001.jpg
+          example: /uploads/latest/orange-pi-main.jpg
         yolo_labels:
           type: array
           items:
@@ -467,6 +501,32 @@ components:
         access_decision:
           type: string
           enum: [allow, deny, unknown]
+        source:
+          type: string
+          enum: [auto_face, fire_extinguisher, drone]
+          example: auto_face
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+        event_key:
+          type: string
+          nullable: true
+          example: face:person:person_001
+        history_saved:
+          type: boolean
+          nullable: true
+          description: Present on upload response. True means this upload also entered historical photos after cooldown.
+        history_photo_id:
+          type: string
+          nullable: true
+        history_file_url:
+          type: string
+          nullable: true
+        cooldown_seconds:
+          type: integer
+          nullable: true
+          example: 5
     CommandCreate:
       type: object
       required:
@@ -478,7 +538,7 @@ components:
           example: orange-pi-main
         type:
           type: string
-          enum: [SET_LIGHT, SET_FAN, OPEN_DOOR, CLOSE_DOOR, REQUEST_PHOTO]
+          enum: [SET_LIGHT, SET_FAN, OPEN_DOOR, CLOSE_DOOR, REQUEST_PHOTO, REQUEST_DETECT_FIRE_EXTINGUISHER, REQUEST_DETECT_DRONE]
         payload:
           type: object
           additionalProperties: true

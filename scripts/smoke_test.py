@@ -49,8 +49,8 @@ def main() -> None:
 
         command = {
             "device_id": "orange-pi-main",
-            "type": "SET_LIGHT",
-            "payload": {"level": 80},
+            "type": "REQUEST_DETECT_DRONE",
+            "payload": {"target": "drone", "upload_mode": "event"},
         }
         created = require_ok(client.post(f"{base_url}/api/commands", json=command))
         print("command", created)
@@ -66,11 +66,16 @@ def main() -> None:
                         data={
                             "device_id": "orange-pi-main",
                             "yolo_labels_json": json.dumps(labels),
+                            "source": "auto_face",
                         },
                         files={"image": ("smoke.jpg", fh, "image/jpeg")},
                     )
                 )
             print("photo", photo)
+            print(
+                "latest_photo",
+                require_ok(client.get(f"{base_url}/api/photos/latest", params={"device_id": "orange-pi-main"})),
+            )
 
         pending = require_ok(
             client.get(f"{base_url}/api/device/commands/pending", params={"device_id": "orange-pi-main"})
@@ -80,4 +85,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

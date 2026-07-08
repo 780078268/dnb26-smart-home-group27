@@ -39,6 +39,7 @@ def init_db() -> None:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
     (UPLOAD_DIR / "photos").mkdir(parents=True, exist_ok=True)
+    (UPLOAD_DIR / "latest").mkdir(parents=True, exist_ok=True)
     (UPLOAD_DIR / "faces").mkdir(parents=True, exist_ok=True)
 
     with connect() as conn:
@@ -85,7 +86,25 @@ def init_db() -> None:
               file_url TEXT NOT NULL,
               yolo_labels_json TEXT NOT NULL,
               face_result_json TEXT NOT NULL,
-              access_decision TEXT NOT NULL
+              access_decision TEXT NOT NULL,
+              source TEXT NOT NULL DEFAULT 'auto_face',
+              event_key TEXT
+            );
+
+            CREATE TABLE IF NOT EXISTS latest_results (
+              device_id TEXT PRIMARY KEY,
+              captured_at TEXT NOT NULL,
+              file_url TEXT NOT NULL,
+              yolo_labels_json TEXT NOT NULL,
+              face_result_json TEXT NOT NULL,
+              access_decision TEXT NOT NULL,
+              source TEXT NOT NULL,
+              updated_at TEXT NOT NULL
+            );
+
+            CREATE TABLE IF NOT EXISTS event_cooldowns (
+              event_key TEXT PRIMARY KEY,
+              last_seen_epoch REAL NOT NULL
             );
 
             CREATE TABLE IF NOT EXISTS commands (
@@ -108,6 +127,11 @@ def init_db() -> None:
             );
             """
         )
+        columns = {row["name"] for row in conn.execute("PRAGMA table_info(photos)").fetchall()}
+        if "source" not in columns:
+            conn.execute("ALTER TABLE photos ADD COLUMN source TEXT NOT NULL DEFAULT 'auto_face'")
+        if "event_key" not in columns:
+            conn.execute("ALTER TABLE photos ADD COLUMN event_key TEXT")
         conn.execute(
             """
             INSERT INTO devices (id, name, type, online, last_seen)
@@ -116,4 +140,3 @@ def init_db() -> None:
             """,
             (DEFAULT_DEVICE_ID, DEFAULT_DEVICE_NAME, DEFAULT_DEVICE_TYPE, now_iso()),
         )
-

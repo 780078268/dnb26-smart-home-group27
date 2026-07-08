@@ -6,7 +6,15 @@ from pydantic import BaseModel, Field
 
 
 Role = Literal["student", "teacher", "guest"]
-CommandType = Literal["SET_LIGHT", "SET_FAN", "OPEN_DOOR", "CLOSE_DOOR", "REQUEST_PHOTO"]
+CommandType = Literal[
+    "SET_LIGHT",
+    "SET_FAN",
+    "OPEN_DOOR",
+    "CLOSE_DOOR",
+    "REQUEST_PHOTO",
+    "REQUEST_DETECT_FIRE_EXTINGUISHER",
+    "REQUEST_DETECT_DRONE",
+]
 CommandStatus = Literal["pending", "sent", "done", "failed"]
 AckStatus = Literal["done", "failed"]
 AccessDecision = Literal["allow", "deny", "unknown"]
@@ -44,4 +52,3 @@ class CommandAck(BaseModel):
     device_id: str
     status: AckStatus
     message: str | None = None
-
