@@ -771,6 +771,7 @@
                     </td>
                     <td class="px-6 py-4 text-right text-xs font-medium">
                         <button type="button" onclick='editPerson(${JSON.stringify(person.id)}, ${JSON.stringify(person.name)})' class="text-accent-cyber hover:opacity-80 mr-4 transition-opacity">编辑</button>
+                        <button type="button" onclick='enrollFace(${JSON.stringify(person.id)})' class="text-accent-emerald hover:opacity-80 mr-4 transition-opacity">${person.face_enrolled ? '更新人脸' : '录入人脸'}</button>
                         <button type="button" onclick='deletePerson(${JSON.stringify(person.id)})' class="text-accent-crimson hover:opacity-80 transition-opacity">删除</button>
                     </td>
                 </tr>
@@ -792,9 +793,50 @@
                 const json = await res.json();
                 if (!res.ok || !json.ok) throw new Error(json.error?.message || 'register failed');
                 showToast('人员已登记', 'success');
+                if (confirm('是否现在为该人员录入人脸照片？')) {
+                    await enrollFace(json.data.id, { refresh: false });
+                }
                 fetchPersons();
             } catch (error) {
                 showToast(`登记失败 // ${error.message}`, 'error');
+            }
+        }
+
+        function pickImageFile() {
+            return new Promise(resolve => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.style.display = 'none';
+                document.body.appendChild(input);
+                input.addEventListener('change', () => {
+                    const file = input.files?.[0] || null;
+                    input.remove();
+                    resolve(file);
+                }, { once: true });
+                input.click();
+            });
+        }
+
+        async function enrollFace(personId, options = {}) {
+            const file = await pickImageFile();
+            if (!file) return;
+            const formData = new FormData();
+            formData.append('image', file);
+            try {
+                showToast('正在上传人脸照片...');
+                const res = await fetch(`${API_BASE}/persons/${personId}/face-samples`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const json = await res.json();
+                if (!res.ok || !json.ok) throw new Error(json.error?.message || 'face upload failed');
+                setConnectionStatus(true);
+                showToast('人脸照片已录入', 'success');
+                if (options.refresh !== false) fetchPersons();
+            } catch (error) {
+                setConnectionStatus(false);
+                showToast(`人脸录入失败 // ${error.message}`, 'error');
             }
         }
 
