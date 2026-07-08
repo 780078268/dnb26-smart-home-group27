@@ -1,0 +1,15 @@
+[Unit]
+Description=Group 27 Smart Home FastAPI backend
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/dnb26-smart-home-group27
+Environment=SMART_HOME_BASE_URL=http://82.156.238.244
+ExecStart=/opt/dnb26-smart-home-group27/.venv/bin/uvicorn backend.main:app --host 127.0.0.1 --port 8000
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
+

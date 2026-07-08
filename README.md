@@ -9,6 +9,9 @@
 - `第27组软件组分工与接口文档.md`：五人分工、开发计划、系统结构、软硬件接口和验收 checklist。
 - `第27组软件接口契约.openapi.yaml`：前端、后端、板端网关之间的 OpenAPI 接口契约。
 - `香橙派板端接入后端API说明.md`：给 Orange Pi 同学使用的状态上报、图片与 YOLO 结果上传、命令轮询说明。
+- `backend/`：FastAPI 后端实现，包含 SQLite 数据库、图片保存、命令队列和接口路由。
+- `deploy/`：服务器部署配置，包含 Apache 反向代理和 systemd 服务文件。
+- `tests/`：后端接口自动化测试。
 - `DnB26题目-智能家居.docx`：课程项目题目。
 - `DnB26_Introduction.pptx`：课程介绍和交付要求。
 - `Yolo安装与环境配置.pdf`：YOLO 环境配置资料。
@@ -25,3 +28,24 @@
 - 后端：提供 REST API、SQLite 数据库、命令队列、图片保存和识别结果保存。
 - 前端：提供状态仪表盘、历史查询、远程控制和识别结果展示。
 - 识别：YOLO 部署在 Orange Pi 上，人脸识别负责 2 真 1 假门禁演示。
+
+## 后端本地启动
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+健康检查：
+
+```bash
+curl http://127.0.0.1:8000/api/health
+```
+
+接口测试：
+
+```bash
+pytest
+```
