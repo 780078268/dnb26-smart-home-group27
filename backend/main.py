@@ -256,7 +256,7 @@ def list_devices() -> dict[str, Any]:
 @app.get("/api/status/latest")
 def latest_status() -> dict[str, Any]:
     with connect() as conn:
-        row = conn.execute("SELECT * FROM telemetry ORDER BY captured_at DESC, id DESC LIMIT 1").fetchone()
+        row = conn.execute("SELECT * FROM telemetry ORDER BY captured_at DESC, rowid DESC LIMIT 1").fetchone()
     return ok(telemetry_from_row(row) if row else {})
 
 
@@ -274,7 +274,7 @@ def query_telemetry(
     if to:
         sql += " AND captured_at <= ?"
         params.append(to)
-    sql += " ORDER BY captured_at DESC, id DESC LIMIT ?"
+    sql += " ORDER BY captured_at DESC, rowid DESC LIMIT ?"
     params.append(limit)
 
     with connect() as conn:
@@ -354,7 +354,7 @@ def upload_face_sample(person_id: str, image: UploadFile = File(...)) -> dict[st
 @app.get("/api/photos")
 def list_photos(limit: int = Query(default=50, ge=1, le=500)) -> dict[str, Any]:
     with connect() as conn:
-        rows = conn.execute("SELECT * FROM photos ORDER BY captured_at DESC, id DESC LIMIT ?", (limit,)).fetchall()
+        rows = conn.execute("SELECT * FROM photos ORDER BY captured_at DESC, rowid DESC LIMIT ?", (limit,)).fetchall()
     return ok([photo_from_row(row) for row in rows])
 
 
@@ -369,14 +369,14 @@ def post_command(payload: CommandCreate) -> dict[str, Any]:
 @app.get("/api/commands")
 def list_commands(limit: int = Query(default=100, ge=1, le=500)) -> dict[str, Any]:
     with connect() as conn:
-        rows = conn.execute("SELECT * FROM commands ORDER BY created_at DESC, id DESC LIMIT ?", (limit,)).fetchall()
+        rows = conn.execute("SELECT * FROM commands ORDER BY created_at DESC, rowid DESC LIMIT ?", (limit,)).fetchall()
     return ok([command_from_row(row) for row in rows])
 
 
 @app.get("/api/events")
 def list_events(limit: int = Query(default=100, ge=1, le=500)) -> dict[str, Any]:
     with connect() as conn:
-        rows = conn.execute("SELECT * FROM events ORDER BY created_at DESC, id DESC LIMIT ?", (limit,)).fetchall()
+        rows = conn.execute("SELECT * FROM events ORDER BY created_at DESC, rowid DESC LIMIT ?", (limit,)).fetchall()
     return ok([event_from_row(row) for row in rows])
 
 
@@ -454,7 +454,7 @@ def pending_commands(device_id: str = Query(...)) -> dict[str, Any]:
             """
             SELECT * FROM commands
             WHERE device_id = ? AND status = 'pending'
-            ORDER BY created_at ASC, id ASC
+            ORDER BY created_at ASC, rowid ASC
             """,
             (device_id,),
         ).fetchall()

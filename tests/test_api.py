@@ -47,6 +47,7 @@ def test_health_and_device_seed(client):
 def test_telemetry_latest_and_history(client):
     payload = {
         "device_id": "orange-pi-main",
+        "captured_at": "2026-07-06T09:30:00+08:00",
         "temperature_c": 28.4,
         "door_open": False,
         "window_open": True,
@@ -56,12 +57,21 @@ def test_telemetry_latest_and_history(client):
     saved = assert_ok(client.post("/api/device/telemetry", json=payload))
     assert saved["saved"] is True
 
+    second_payload = {
+        **payload,
+        "captured_at": payload.get("captured_at") or "2026-07-06T09:30:00+08:00",
+        "temperature_c": 29.5,
+        "fan_on": False,
+    }
+    saved = assert_ok(client.post("/api/device/telemetry", json=second_payload))
+    assert saved["saved"] is True
+
     latest = assert_ok(client.get("/api/status/latest"))
-    assert latest["temperature_c"] == 28.4
+    assert latest["temperature_c"] == 29.5
     assert latest["window_open"] is True
 
     history = assert_ok(client.get("/api/telemetry", params={"limit": 10}))
-    assert len(history) == 1
+    assert len(history) == 2
     assert history[0]["id"] == latest["id"]
 
 
