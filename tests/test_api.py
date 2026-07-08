@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import sys
 from pathlib import Path
 
@@ -33,6 +34,17 @@ def assert_ok(response):
     assert body["ok"] is True
     assert body["error"] is None
     return body["data"]
+
+
+SAMPLE_JPEG = base64.b64decode(
+    "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////"
+    "2wBDAf//////////////////////////////////////////////////////////////////////////////////////"
+    "wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAX/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIQAxAAAAH/"
+    "xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAEFAqf/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oACAEDAQE/ASP/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oA"
+    "CAICAQE/ASP/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAY/Al//xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAE/Iqf/2gAMAwEAAgADAAAAEP/E"
+    "FBQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQMBAT8QH//EFBQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQIBAT8QH//EFBABAQAAAAAAAAAAAAAAAAAAARD/2gAI"
+    "AQEABj8QH//Z"
+)
 
 
 def test_health_and_device_seed(client):
@@ -87,7 +99,7 @@ def test_person_photo_yolo_command_flow(client):
     enrolled = assert_ok(
         client.post(
             f"/api/persons/{person['id']}/face-samples",
-            files={"image": ("face.jpg", b"fake-face-image", "image/jpeg")},
+            files={"image": ("face.jpg", SAMPLE_JPEG, "image/jpeg")},
         )
     )
     assert enrolled["face_enrolled"] is True
@@ -99,7 +111,7 @@ def test_person_photo_yolo_command_flow(client):
                 "device_id": "orange-pi-main",
                 "yolo_labels_json": '[{"label":"person","confidence":0.91},{"label":"light bulb","confidence":0.78}]',
             },
-            files={"image": ("photo.jpg", b"fake-photo-image", "image/jpeg")},
+            files={"image": ("photo.jpg", SAMPLE_JPEG, "image/jpeg")},
         )
     )
     assert photo["access_decision"] == "allow"

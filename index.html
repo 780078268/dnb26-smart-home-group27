@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第27组智能家居控制台</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['Space Grotesk', 'monospace'],
+                    },
+                    colors: {
+                        dark: {
+                            950: '#090a0f', // 极深邃的微蓝底色
+                            900: '#12141c', // 卡片暗色
+                            800: '#1a1d29', // 悬浮及输入框暗色
+                            700: '#25293a',
+                        },
+                        accent: {
+                            cyber: '#38bdf8',  // 精准数字蓝
+                            emerald: '#34d399',// 语义安全绿
+                            crimson: '#f87171',// 语义警报红
+                        }
+                    },
+                    letterSpacing: {
+                        tightest: '0em',
+                        tighter: '0em',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Awwwards 顶奢数字美学：严苛的暗黑体系与极其克制的发光 */
+        body {
+            background-color: #090a0f;
+            color: #f8fafc;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+
+        /* 隐藏滚动条但保留滚动功能 */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090a0f;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #25293a;
+            border-radius: 2px;
+        }
+
+        /* 高级 SaaS 系统的点阵背景纹理 (Dot Matrix Grid) */
+        .dot-matrix {
+            background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+
+        /* Tab 动画无缝过渡 */
+        .tab-content {
+            display: none;
+            opacity: 0;
+            transform: translateY(12px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .tab-content.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 极其内敛的高级边框发光效应，绝非廉价的炫技渐变 */
+        .saas-card {
+            background: #12141c;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 8px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .saas-card:hover {
+            border-color: rgba(56, 189, 248, 0.2);
+            box-shadow: 0 12px 40px -12px rgba(0, 0, 0, 0.7);
+        }
+
+        /* 现代原生 Range 滑块美化 */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #38bdf8;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+            transition: transform 0.1s ease;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        button,
+        input,
+        [role="button"] {
+            touch-action: manipulation;
+        }
+
+        button:focus-visible,
+        input:focus-visible {
+            outline: 2px solid #38bdf8;
+            outline-offset: 3px;
+        }
+
+        .is-loading {
+            opacity: 0.55;
+            pointer-events: none;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+</head>
+<body class="font-sans antialiased dot-matrix min-h-screen flex flex-col lg:flex-row">
+
+    <aside class="w-full lg:w-72 bg-dark-950 border-b lg:border-b-0 lg:border-r border-white/[0.06] flex flex-col lg:h-screen sticky top-0 z-50 p-6 justify-between" aria-label="主导航">
+        <div class="space-y-10">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="h-5 w-1.5 bg-accent-cyber rounded-full"></div>
+                    <span class="font-mono text-sm tracking-widest text-white/90 font-bold uppercase">第27组网关</span>
+                </div>
+                <span class="font-mono text-[10px] text-white/30 bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.02]">v0.2 // 联调版</span>
+            </div>
+
+            <nav class="space-y-2 flex flex-row lg:flex-col overflow-x-auto lg:overflow-visible gap-2 lg:gap-0" role="tablist" aria-label="控制台视图">
+                <button type="button" onclick="switchTab('dashboard')" id="nav-dashboard" role="tab" aria-selected="true" aria-controls="tab-dashboard" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-xs font-mono font-medium tracking-wider uppercase transition-all duration-200 bg-white/[0.04] text-accent-cyber border border-white/[0.05]">
+                    <i data-lucide="layout-grid" class="w-4 h-4"></i>
+                    <span>实时总览</span>
+                </button>
+                <button type="button" onclick="switchTab('history')" id="nav-history" role="tab" aria-selected="false" aria-controls="tab-history" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-xs font-mono font-medium tracking-wider uppercase transition-all duration-200 text-white/40 hover:text-white/80 hover:bg-white/[0.02]">
+                    <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+                    <span>遥测历史</span>
+                </button>
+                <button type="button" onclick="switchTab('access')" id="nav-access" role="tab" aria-selected="false" aria-controls="tab-access" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-xs font-mono font-medium tracking-wider uppercase transition-all duration-200 text-white/40 hover:text-white/80 hover:bg-white/[0.02]">
+                    <i data-lucide="shield-check" class="w-4 h-4"></i>
+                    <span>门禁档案</span>
+                </button>
+            </nav>
+        </div>
+
+        <div class="pt-6 border-t border-white/[0.04] mt-6 lg:mt-0 hidden lg:block">
+            <div class="flex items-center justify-between text-[11px] font-mono">
+                <span class="text-white/30">网关状态</span>
+                <div class="flex items-center space-x-2">
+                    <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse" id="conn-status-dot"></span>
+                    <span class="text-white/70" id="conn-status-text">启动中</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 p-6 md:p-10 lg:p-14 max-w-7xl mx-auto w-full space-y-12 overflow-y-auto" id="main-content">
+        
+        <div id="tab-dashboard" class="tab-content active space-y-10">
+            <header class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-white/[0.04] pb-6">
+                <div>
+                    <p class="text-[11px] font-mono tracking-widest text-accent-cyber uppercase">环境与设备监控</p>
+                    <h2 class="text-3xl font-light text-white tracking-tighter mt-1 font-sans">智能家居控制台 // 实时状态</h2>
+                </div>
+                <div class="font-mono text-xs text-white/40 bg-dark-900 px-4 py-2 rounded-lg border border-white/[0.04]">
+                    同步时间： <span id="last-update-time" class="text-white/80 font-medium">--</span>
+                </div>
+            </header>
+
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+                <div class="saas-card p-6 rounded-xl flex flex-col justify-between min-h-[140px]">
+                    <div class="flex items-center justify-between text-white/40">
+                        <span class="text-[11px] font-mono uppercase tracking-wider">01 // 温度</span>
+                        <i data-lucide="thermometer" class="w-4 h-4 text-white/20"></i>
+                    </div>
+                    <div class="flex items-baseline mt-4">
+                        <span class="text-5xl font-light text-white tracking-tightest font-mono" id="val-temp">--</span>
+                        <span class="text-sm font-mono text-white/40 ml-1">°C</span>
+                    </div>
+                </div>
+
+                <div class="saas-card p-6 rounded-xl flex flex-col justify-between min-h-[140px]">
+                    <div class="flex items-center justify-between text-white/40">
+                        <span class="text-[11px] font-mono uppercase tracking-wider">02 // 入户门锁</span>
+                        <i data-lucide="lock" class="w-4 h-4 text-white/20"></i>
+                    </div>
+                    <div class="flex items-center space-x-2 mt-4">
+                        <div class="w-2 h-2 rounded-full bg-white/20" id="dot-door"></div>
+                        <span class="text-2xl font-medium text-white tracking-tighter" id="val-door">--</span>
+                    </div>
+                </div>
+
+                <div class="saas-card p-6 rounded-xl flex flex-col justify-between min-h-[140px]">
+                    <div class="flex items-center justify-between text-white/40">
+                        <span class="text-[11px] font-mono uppercase tracking-wider">03 // 灯光亮度</span>
+                        <i data-lucide="sun" class="w-4 h-4 text-white/20"></i>
+                    </div>
+                    <div class="flex items-baseline mt-4">
+                        <span class="text-5xl font-light text-white tracking-tightest font-mono" id="val-light">--</span>
+                        <span class="text-sm font-mono text-white/40 ml-1">%</span>
+                    </div>
+                </div>
+
+                <div class="saas-card p-6 rounded-xl flex flex-col justify-between min-h-[140px]">
+                    <div class="flex items-center justify-between text-white/40">
+                        <span class="text-[11px] font-mono uppercase tracking-wider">04 // 风扇通风</span>
+                        <i data-lucide="wind" class="w-4 h-4 text-white/20"></i>
+                    </div>
+                    <div class="flex items-center space-x-2 mt-4">
+                        <div class="w-2 h-2 rounded-full bg-white/20" id="dot-fan"></div>
+                        <span class="text-2xl font-medium text-white tracking-tighter" id="val-fan">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+                
+                <div class="saas-card rounded-xl p-6 lg:col-span-5 space-y-8">
+                    <div class="border-b border-white/[0.04] pb-4">
+                        <h3 class="text-xs font-mono font-medium tracking-wider uppercase text-white/80">硬件控制面板</h3>
+                    </div>
+                    
+                    <div class="space-y-8">
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center text-xs font-mono">
+                                <label class="text-white/50 uppercase">灯光亮度</label>
+                                <span class="text-accent-cyber" id="ctrl-light-val">--</span>
+                            </div>
+                            <div class="flex items-center space-x-4 bg-dark-950 p-3 rounded-lg border border-white/[0.03]">
+                                <i data-lucide="moon" class="w-3.5 h-3.5 text-white/30"></i>
+                                <input type="range" id="input-light" min="0" max="100" value="70" aria-label="设置灯光亮度" class="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer" onchange="sendControl('SET_LIGHT', {level: parseInt(this.value)})" oninput="document.getElementById('ctrl-light-val').innerText = this.value + '%'">
+                                <i data-lucide="sun" class="w-3.5 h-3.5 text-white/30"></i>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between bg-dark-950 p-4 rounded-lg border border-white/[0.03]">
+                            <div>
+                                <h4 class="text-xs font-mono text-white/80 uppercase">通风系统</h4>
+                                <p class="text-[11px] text-white/40 mt-1 font-sans">智能温控 / 手动控制</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="input-fan" aria-label="切换风扇状态" class="sr-only peer" onchange="sendControl('SET_FAN', {on: this.checked})">
+                                <div class="w-10 h-5 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:bg-white after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-accent-cyber"></div>
+                            </label>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between bg-dark-950 p-4 rounded-lg border border-white/[0.03] gap-4 sm:gap-0">
+                            <div>
+                                <h4 class="text-xs font-mono text-white/80 uppercase">门锁执行器</h4>
+                                <p class="text-[11px] text-white/40 mt-1 font-sans">远程执行开锁 / 上锁指令</p>
+                            </div>
+                            <div class="flex space-x-2 font-mono text-xs">
+                                <button type="button" onclick="sendControl('OPEN_DOOR')" class="px-4 py-2 rounded bg-white/5 text-white hover:bg-white/10 border border-white/10 transition-colors uppercase">
+                                    开锁
+                                </button>
+                                <button type="button" onclick="sendControl('CLOSE_DOOR')" class="px-4 py-2 rounded bg-white text-dark-950 hover:bg-white/90 font-medium transition-colors uppercase">
+                                    上锁
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="saas-card rounded-xl p-6 lg:col-span-7 flex flex-col space-y-6">
+                    <div class="flex justify-between items-center border-b border-white/[0.04] pb-4">
+                        <h3 class="text-xs font-mono font-medium tracking-wider uppercase text-white/80">视觉识别画面</h3>
+                        <button type="button" onclick="fetchPhotos()" aria-label="刷新识别图片" class="text-xs font-mono text-accent-cyber hover:opacity-80 flex items-center space-x-1.5 transition-opacity">
+                            <i data-lucide="refresh-cw" class="w-3 h-3"></i>
+                            <span>刷新</span>
+                        </button>
+                    </div>
+                    
+                    <div class="aspect-[16/9] w-full bg-dark-950 rounded-lg border border-white/[0.04] overflow-hidden relative flex items-center justify-center">
+                        <img id="latest-photo" src="" alt="实时识别画面" class="w-full h-full object-cover hidden">
+                        <div id="photo-placeholder" class="text-white/20 flex flex-col items-center font-mono text-xs tracking-wider text-center px-4">
+                            <i data-lucide="video-off" class="w-6 h-6 mb-3 opacity-40 text-white"></i>
+                            <span id="photo-placeholder-title">暂无识别画面</span>
+                            <span id="photo-placeholder-detail" class="mt-2 text-[10px] text-white/30 normal-case tracking-normal"></span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                        <div class="space-y-2">
+                            <span class="text-[10px] font-mono text-white/40 tracking-widest uppercase">YOLO 目标检测</span>
+                            <div id="yolo-labels" class="flex flex-wrap gap-2 pt-1">
+                                <span class="text-xs text-white/20 font-mono">等待画面...</span>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <span class="text-[10px] font-mono text-white/40 tracking-widest uppercase">人脸识别鉴权</span>
+                            <div id="face-result" class="p-3 rounded-lg border border-white/[0.03] bg-dark-950 font-mono text-xs text-white/50 flex items-center space-x-2">
+                                <i data-lucide="fingerprint" class="w-4 h-4 text-white/30"></i>
+                                <span>待机</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="tab-history" class="tab-content space-y-8">
+            <header class="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 border-b border-white/[0.04] pb-6">
+                <div>
+                    <p class="text-[11px] font-mono tracking-widest text-accent-cyber uppercase">时序数据</p>
+                    <h2 class="text-3xl font-light text-white tracking-tighter mt-1 font-sans">设备遥测历史记录</h2>
+                </div>
+                <button type="button" onclick="fetchHistory()" class="px-4 py-2 rounded bg-white/5 text-white hover:bg-white/10 border border-white/10 font-mono text-xs transition-colors flex items-center justify-center space-x-2 w-full sm:w-auto uppercase">
+                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                    <span>刷新记录</span>
+                </button>
+            </header>
+
+            <div class="saas-card rounded-xl overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left font-mono text-xs whitespace-nowrap">
+                        <thead class="bg-white/[0.02] text-white/40 border-b border-white/[0.04]">
+                            <tr>
+                                <th class="px-6 py-4 font-medium tracking-wider">时间戳</th>
+                                <th class="px-6 py-4 font-medium tracking-wider">温度 (°C)</th>
+                                <th class="px-6 py-4 font-medium tracking-wider">门锁</th>
+                                <th class="px-6 py-4 font-medium tracking-wider">窗户</th>
+                                <th class="px-6 py-4 font-medium tracking-wider">灯光 (%)</th>
+                                <th class="px-6 py-4 font-medium tracking-wider">风扇状态</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-table-body" class="divide-y divide-white/[0.02] text-white/70">
+                            <tr>
+                                <td colspan="6" class="px-6 py-12 text-center text-white/30">正在初始化查询...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-access" class="tab-content space-y-8">
+            <header class="border-b border-white/[0.04] pb-6">
+                <p class="text-[11px] font-mono tracking-widest text-accent-cyber uppercase">身份与门禁管理</p>
+                <h2 class="text-3xl font-light text-white tracking-tighter mt-1 font-sans">授权人员与门禁鉴权管理</h2>
+            </header>
+
+            <div class="saas-card rounded-xl overflow-hidden">
+                <div class="p-5 border-b border-white/[0.04] bg-white/[0.01] flex justify-between items-center">
+                    <span class="text-xs font-mono font-medium tracking-wider uppercase text-white/70">已登记人员</span>
+                    <button type="button" onclick="registerPerson()" class="px-3 py-1.5 rounded bg-white text-dark-950 font-mono text-xs font-medium hover:bg-white/90 transition-colors uppercase flex items-center space-x-1">
+                        <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        <span>登记人员</span>
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left font-mono text-xs whitespace-nowrap">
+                        <thead class="bg-white/[0.02] text-white/40 border-b border-white/[0.04]">
+                            <tr>
+                                <th class="px-6 py-4 font-medium tracking-wider">编号</th>
+                                <th class="px-6 py-4 font-medium tracking-wider">姓名</th>
+                                <th class="px-6 py-4 font-medium tracking-wider">角色</th>
+                                <th class="px-6 py-4 font-medium tracking-wider">门禁权限</th>
+                                <th class="px-6 py-4 font-medium tracking-wider">人脸样本</th>
+                                <th class="px-6 py-4 font-medium tracking-wider text-right">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="persons-table-body" class="divide-y divide-white/[0.02] text-white/70">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="toast" class="fixed bottom-6 right-6 bg-dark-900 border border-white/10 text-white/90 px-4 py-3 rounded shadow-2xl font-mono text-xs tracking-wider transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center space-x-3">
+        <div class="w-1.5 h-1.5 rounded-full bg-accent-cyber" id="toast-dot"></div>
+        <span id="toast-msg">系统就绪</span>
+    </div>
+
+    <script>
+        function renderIcons() {
+            if (window.lucide?.createIcons) {
+                window.lucide.createIcons();
+            }
+        }
+
+        renderIcons();
+
+        const API_ORIGIN = (window.SMART_HOME_API_ORIGIN || 'http://82.156.238.244').replace(/\/$/, '');
+        const API_BASE = `${API_ORIGIN}/api`;
+        const DEVICE_ID = 'orange-pi-main';
+
+        const MOCK_DATA = {
+            latestStatus: {
+                ok: true,
+                data: {
+                    device_id: DEVICE_ID,
+                    temperature_c: 26.8,
+                    door_open: false,
+                    window_open: true,
+                    light_level: 70,
+                    fan_on: false,
+                    captured_at: new Date().toISOString()
+                }
+            },
+            history: {
+                ok: true,
+                data: Array.from({length: 8}).map((_, i) => ({
+                    captured_at: new Date(Date.now() - i * 1800000).toISOString(),
+                    temperature_c: Number((24.2 + Math.random() * 3).toFixed(1)),
+                    door_open: Math.random() > 0.9,
+                    window_open: Math.random() > 0.4,
+                    light_level: Math.floor(50 + Math.random() * 40),
+                    fan_on: Math.random() > 0.7
+                }))
+            },
+            photos: {
+                ok: true,
+                data: [{
+                    id: "img_snapshot_9982",
+                    captured_at: new Date().toISOString(),
+                    file_url: "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=800&q=80",
+                    yolo_labels: [
+                        { label: "person", confidence: 0.96 },
+                        { label: "light bulb", confidence: 0.84 }
+                    ],
+                    face_result: {
+                        matched_person_id: "person_27001",
+                        matched_name: "测试授权人员A",
+                        confidence: 0.92
+                    },
+                    access_decision: "allow"
+                }]
+            },
+            persons: {
+                ok: true,
+                data: [
+                    { id: "p_27001", name: "测试授权人员A", role: "student", authorized: true, face_enrolled: true },
+                    { id: "p_27002", name: "王老师", role: "teacher", authorized: true, face_enrolled: true },
+                    { id: "p_27003", name: "访客X", role: "guest", authorized: false, face_enrolled: false }
+                ]
+            }
+        };
+
+        function cloneMock(value) {
+            return JSON.parse(JSON.stringify(value));
+        }
+
+        function escapeHTML(value) {
+            return String(value ?? '').replace(/[&<>"']/g, char => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            }[char]));
+        }
+
+        function resolveAssetUrl(url) {
+            if (!url) return '';
+            return new URL(url, API_ORIGIN).href;
+        }
+
+        function formatTime(isoString) {
+            if (!isoString) return '--';
+            const date = new Date(isoString);
+            return date.toLocaleTimeString('zh-CN', { hour12: false }) + ' // ' + date.toLocaleDateString('zh-CN');
+        }
+
+        function formatShortTime(isoString) {
+            if (!isoString) return '--';
+            const date = new Date(isoString);
+            return date.toLocaleString('zh-CN', {hour12:false, month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit'});
+        }
+
+        function translateLabel(label) {
+            const labels = {
+                person: '人员',
+                'light bulb': '灯泡',
+                light: '灯光',
+                fan: '风扇',
+                door: '门',
+                window: '窗户',
+                chair: '椅子',
+                table: '桌子',
+                cat: '猫',
+                dog: '狗'
+            };
+            const normalized = String(label ?? '').trim().toLowerCase();
+            return labels[normalized] || label;
+        }
+
+        function normalizeRole(input) {
+            const roles = {
+                '1': 'student',
+                '2': 'teacher',
+                '3': 'guest',
+                '学生': 'student',
+                '教师': 'teacher',
+                '老师': 'teacher',
+                '访客': 'guest',
+                student: 'student',
+                teacher: 'teacher',
+                guest: 'guest'
+            };
+            return roles[String(input ?? '').trim().toLowerCase()] || 'student';
+        }
+
+        function showToast(message, statusType = 'info') {
+            const toast = document.getElementById('toast');
+            const dot = document.getElementById('toast-dot');
+            document.getElementById('toast-msg').innerText = message;
+
+            if (statusType === 'error') {
+                dot.className = "w-1.5 h-1.5 rounded-full bg-accent-crimson";
+                toast.style.borderColor = "rgba(248, 113, 113, 0.4)";
+            } else if (statusType === 'success') {
+                dot.className = "w-1.5 h-1.5 rounded-full bg-accent-emerald";
+                toast.style.borderColor = "rgba(52, 211, 153, 0.35)";
+            } else {
+                dot.className = "w-1.5 h-1.5 rounded-full bg-accent-cyber";
+                toast.style.borderColor = "rgba(56, 189, 248, 0.4)";
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 2800);
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+
+            ['dashboard', 'history', 'access'].forEach(id => {
+                const btn = document.getElementById(`nav-${id}`);
+                btn.setAttribute('aria-selected', String(id === tabId));
+                btn.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-xs font-mono font-medium tracking-wider uppercase transition-all duration-200 text-white/40 hover:text-white/80 hover:bg-white/[0.02]";
+            });
+
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            activeBtn.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-xs font-mono font-medium tracking-wider uppercase transition-all duration-200 bg-white/[0.04] text-accent-cyber border border-white/[0.05]";
+
+            if (tabId === 'history') fetchHistory();
+            if (tabId === 'access') fetchPersons();
+        }
+
+        async function fetchData(endpoint, mockDataKey) {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 6000);
+            try {
+                const res = await fetch(`${API_BASE}${endpoint}`, { signal: controller.signal });
+                const json = await res.json();
+                if (!res.ok || !json.ok) {
+                    throw new Error(json.error?.message || 'request failed');
+                }
+                setConnectionStatus(true);
+                return json;
+            } catch (err) {
+                setConnectionStatus(false);
+                return cloneMock(MOCK_DATA[mockDataKey]);
+            } finally {
+                clearTimeout(timer);
+            }
+        }
+
+        function setConnectionStatus(connected) {
+            const dot = document.getElementById('conn-status-dot');
+            const text = document.getElementById('conn-status-text');
+            if (dot && text) {
+                dot.className = connected ? "w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse" : "w-1.5 h-1.5 rounded-full bg-accent-crimson animate-pulse";
+                text.innerText = connected ? "实时后端" : "本地模拟";
+                text.className = connected ? "text-white/70" : "text-white/30";
+            }
+        }
+
+        async function fetchLatestStatus() {
+            const data = await fetchData('/status/latest', 'latestStatus');
+            if (!data?.ok || !data.data) return;
+
+            const state = data.data;
+            const temp = Number(state.temperature_c ?? 0);
+            const lightLevel = Number(state.light_level ?? 0);
+
+            document.getElementById('last-update-time').innerText = formatTime(state.captured_at);
+            document.getElementById('val-temp').innerText = Number.isFinite(temp) ? temp.toFixed(1) : '--';
+            document.getElementById('val-light').innerText = Number.isFinite(lightLevel) ? lightLevel : '--';
+
+            const doorEl = document.getElementById('val-door');
+            const doorDot = document.getElementById('dot-door');
+            doorEl.innerText = state.door_open ? "开启" : "已上锁";
+            doorEl.className = state.door_open ? "text-2xl font-medium tracking-tighter text-accent-cyber" : "text-2xl font-medium tracking-tighter text-white";
+            doorDot.className = state.door_open ? "w-2 h-2 rounded-full bg-accent-cyber shadow-[0_0_10px_rgba(56,189,248,0.6)]" : "w-2 h-2 rounded-full bg-white/20";
+
+            const fanEl = document.getElementById('val-fan');
+            const fanDot = document.getElementById('dot-fan');
+            fanEl.innerText = state.fan_on ? "运行中" : "待机";
+            fanEl.className = state.fan_on ? "text-2xl font-medium tracking-tighter text-accent-emerald" : "text-2xl font-medium tracking-tighter text-white/50";
+            fanDot.className = state.fan_on ? "w-2 h-2 rounded-full bg-accent-emerald animate-pulse" : "w-2 h-2 rounded-full bg-white/20";
+
+            document.getElementById('input-light').value = lightLevel;
+            document.getElementById('ctrl-light-val').innerText = `${lightLevel}%`;
+            document.getElementById('input-fan').checked = Boolean(state.fan_on);
+        }
+
+        function commandLabel(type) {
+            const labels = {
+                SET_LIGHT: '设置灯光',
+                SET_FAN: '切换风扇',
+                OPEN_DOOR: '远程开锁',
+                CLOSE_DOOR: '远程上锁'
+            };
+            return labels[type] || type;
+        }
+
+        async function sendControl(type, payload = {}) {
+            try {
+                showToast(`正在发送指令 // ${commandLabel(type)}`);
+                const res = await fetch(`${API_BASE}/commands`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ device_id: DEVICE_ID, type, payload })
+                });
+                const json = await res.json();
+                if (!res.ok || !json.ok) {
+                    throw new Error(json.error?.message || 'command failed');
+                }
+                setConnectionStatus(true);
+                showToast(`指令已入队 // ${json.data.id}`, 'success');
+                setTimeout(fetchLatestStatus, 600);
+            } catch (error) {
+                setConnectionStatus(false);
+                showToast(`指令失败 // ${error.message || 'FAILED'}`, 'error');
+            }
+        }
+
+        async function fetchPhotos() {
+            const data = await fetchData('/photos?limit=1', 'photos');
+            const imgEl = document.getElementById('latest-photo');
+            const placeholder = document.getElementById('photo-placeholder');
+            const yoloContainer = document.getElementById('yolo-labels');
+            const faceContainer = document.getElementById('face-result');
+            const placeholderTitle = document.getElementById('photo-placeholder-title');
+            const placeholderDetail = document.getElementById('photo-placeholder-detail');
+
+            if (!data?.ok || !data.data.length) {
+                imgEl.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+                placeholderTitle.innerText = '暂无识别画面';
+                placeholderDetail.innerText = '';
+                yoloContainer.innerHTML = '<span class="text-xs text-white/30">未收到画面</span>';
+                faceContainer.innerHTML = '<i data-lucide="fingerprint" class="w-4 h-4 text-white/20"></i><span>待机</span>';
+                renderIcons();
+                return;
+            }
+
+            const photo = data.data[0];
+            if (photo.file_url) {
+                const assetUrl = resolveAssetUrl(photo.file_url);
+                imgEl.src = assetUrl;
+                imgEl.onload = () => {
+                    imgEl.classList.remove('hidden');
+                    placeholder.classList.add('hidden');
+                    placeholderDetail.innerText = '';
+                };
+                imgEl.onerror = () => {
+                    imgEl.classList.add('hidden');
+                    placeholder.classList.remove('hidden');
+                    placeholderTitle.innerText = '已收到画面 // 图片解码失败';
+                    placeholderDetail.innerText = assetUrl;
+                };
+            } else {
+                imgEl.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+                placeholderTitle.innerText = '最新画面没有图片地址';
+                placeholderDetail.innerText = '';
+            }
+
+            if (photo.yolo_labels?.length) {
+                yoloContainer.innerHTML = photo.yolo_labels.map(label => `
+                    <span class="inline-flex items-center px-2 py-0.5 rounded font-mono text-[11px] bg-white/[0.04] text-white border border-white/10">
+                        ${escapeHTML(translateLabel(label.label))} <span class="ml-1.5 opacity-50 text-[10px]">${(Number(label.confidence || 0) * 100).toFixed(0)}%</span>
+                    </span>
+                `).join('');
+            } else {
+                yoloContainer.innerHTML = '<span class="text-xs text-white/30">未检测到目标</span>';
+            }
+
+            if (photo.access_decision === 'allow') {
+                faceContainer.className = "mt-2 p-3 rounded-lg border border-accent-emerald/20 bg-accent-emerald/[0.02] text-xs text-accent-emerald flex items-center space-x-2";
+                faceContainer.innerHTML = `<i data-lucide="shield-check" class="w-4 h-4 text-accent-emerald"></i>
+                                           <div><span class="font-bold">鉴权通过：</span> ${escapeHTML(photo.face_result?.matched_name || '已登记人员')} // ${(Number(photo.face_result?.confidence || 0) * 100).toFixed(0)}%</div>`;
+            } else if (photo.access_decision === 'deny') {
+                faceContainer.className = "mt-2 p-3 rounded-lg border border-accent-crimson/20 bg-accent-crimson/[0.02] text-xs text-accent-crimson flex items-center space-x-2";
+                faceContainer.innerHTML = `<i data-lucide="shield-alert" class="w-4 h-4 text-accent-crimson"></i>
+                                           <div><span class="font-bold">鉴权拒绝：</span> 未识别身份</div>`;
+            } else {
+                faceContainer.className = "mt-2 p-3 rounded-lg border border-white/[0.04] bg-dark-950 text-xs text-white/40 flex items-center space-x-2";
+                faceContainer.innerHTML = `<i data-lucide="fingerprint" class="w-4 h-4 text-white/20"></i><span>待机</span>`;
+            }
+            renderIcons();
+        }
+
+        async function fetchHistory() {
+            const tbody = document.getElementById('history-table-body');
+            tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-white/20">正在查询遥测数据库...</td></tr>`;
+
+            const data = await fetchData('/telemetry?limit=50', 'history');
+            if (!data?.ok || !data.data.length) {
+                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-white/30">暂无遥测记录</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = data.data.map(row => `
+                <tr class="hover:bg-white/[0.01] transition-colors border-b border-white/[0.01]">
+                    <td class="px-6 py-3.5 text-white/40">${formatShortTime(row.captured_at)}</td>
+                    <td class="px-6 py-3.5"><span class="font-medium ${Number(row.temperature_c) > 29 ? 'text-accent-crimson' : 'text-white'}">${escapeHTML(row.temperature_c)}</span></td>
+                    <td class="px-6 py-3.5"><span class="text-[11px] ${row.door_open ? 'text-accent-cyber font-bold' : 'text-white/40'}">${row.door_open ? '开启' : '已上锁'}</span></td>
+                    <td class="px-6 py-3.5 text-white/60">${row.window_open ? '开启' : '关闭'}</td>
+                    <td class="px-6 py-3.5 text-white">${escapeHTML(row.light_level)}%</td>
+                    <td class="px-6 py-3.5"><span class="text-[11px] ${row.fan_on ? 'text-accent-emerald font-bold' : 'text-white/40'}">${row.fan_on ? '运行中' : '关闭'}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        async function fetchPersons() {
+            const tbody = document.getElementById('persons-table-body');
+            const data = await fetchData('/persons', 'persons');
+            if (!data?.ok || !data.data.length) {
+                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-white/30">暂无登记人员</td></tr>`;
+                return;
+            }
+
+            const roles = { student: '学生', teacher: '教师', guest: '访客' };
+            tbody.innerHTML = data.data.map(person => `
+                <tr class="hover:bg-white/[0.01] transition-colors border-b border-white/[0.01]">
+                    <td class="px-6 py-4 text-white/30 text-[11px]">${escapeHTML(person.id)}</td>
+                    <td class="px-6 py-4 font-medium text-white">${escapeHTML(person.name)}</td>
+                    <td class="px-6 py-4 text-white/50">${escapeHTML(roles[person.role] || person.role)}</td>
+                    <td class="px-6 py-4">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold ${person.authorized ? 'bg-accent-emerald/10 text-accent-emerald border border-accent-emerald/20' : 'bg-accent-crimson/10 text-accent-crimson border border-accent-crimson/20'}">
+                            ${person.authorized ? '允许通行' : '已禁用'}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        ${person.face_enrolled
+                            ? '<div class="flex items-center space-x-1.5 text-accent-emerald"><i data-lucide="check" class="w-3.5 h-3.5"></i><span>已录入</span></div>'
+                            : '<div class="flex items-center space-x-1.5 text-white/20"><i data-lucide="minus" class="w-3.5 h-3.5"></i><span>未录入</span></div>'
+                        }
+                    </td>
+                    <td class="px-6 py-4 text-right text-xs font-medium">
+                        <button type="button" onclick='editPerson(${JSON.stringify(person.id)}, ${JSON.stringify(person.name)})' class="text-accent-cyber hover:opacity-80 mr-4 transition-opacity">编辑</button>
+                        <button type="button" onclick='deletePerson(${JSON.stringify(person.id)})' class="text-accent-crimson hover:opacity-80 transition-opacity">删除</button>
+                    </td>
+                </tr>
+            `).join('');
+            renderIcons();
+        }
+
+        async function registerPerson() {
+            const name = prompt('输入授权人员姓名');
+            if (!name) return;
+            const roleInput = prompt('角色：学生 / 教师 / 访客', '学生') || '学生';
+            const role = normalizeRole(roleInput);
+            try {
+                const res = await fetch(`${API_BASE}/persons`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, role, authorized: true })
+                });
+                const json = await res.json();
+                if (!res.ok || !json.ok) throw new Error(json.error?.message || 'register failed');
+                showToast('人员已登记', 'success');
+                fetchPersons();
+            } catch (error) {
+                showToast(`登记失败 // ${error.message}`, 'error');
+            }
+        }
+
+        async function editPerson(personId, currentName) {
+            const name = prompt('修改姓名', currentName);
+            if (!name || name === currentName) return;
+            try {
+                const res = await fetch(`${API_BASE}/persons/${personId}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name })
+                });
+                const json = await res.json();
+                if (!res.ok || !json.ok) throw new Error(json.error?.message || 'update failed');
+                showToast('人员已更新', 'success');
+                fetchPersons();
+            } catch (error) {
+                showToast(`更新失败 // ${error.message}`, 'error');
+            }
+        }
+
+        async function deletePerson(personId) {
+            if (!confirm(`确认删除 ${personId}？`)) return;
+            try {
+                const res = await fetch(`${API_BASE}/persons/${personId}`, { method: 'DELETE' });
+                const json = await res.json();
+                if (!res.ok || !json.ok) throw new Error(json.error?.message || 'delete failed');
+                showToast('人员已删除', 'success');
+                fetchPersons();
+            } catch (error) {
+                showToast(`删除失败 // ${error.message}`, 'error');
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchLatestStatus();
+            fetchPhotos();
+
+            setInterval(() => {
+                if (document.getElementById('tab-dashboard').classList.contains('active')) {
+                    fetchLatestStatus();
+                }
+            }, 4000);
+
+            setInterval(() => {
+                if (document.getElementById('tab-dashboard').classList.contains('active')) {
+                    fetchPhotos();
+                }
+            }, 12000);
+        });
+
+    </script>
+</body>
+</html>
