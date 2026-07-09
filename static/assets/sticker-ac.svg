@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" shape-rendering="crispEdges">
+  <rect width="96" height="96" fill="none"/>
+  <rect x="14" y="18" width="68" height="34" fill="#E0F2FE"/>
+  <rect x="18" y="22" width="60" height="26" fill="#BAE6FD"/>
+  <rect x="24" y="34" width="48" height="6" fill="#38BDF8"/>
+  <rect x="64" y="26" width="8" height="6" fill="#C084FC"/>
+  <rect class="wind" x="22" y="62" width="18" height="6" fill="#C084FC"/>
+  <rect class="wind delay" x="46" y="70" width="22" height="6" fill="#C084FC"/>
+  <rect class="wind slow" x="30" y="80" width="32" height="6" fill="#C084FC"/>
+</svg>
