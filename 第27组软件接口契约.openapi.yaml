@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: Group 27 Smart Home Software API
-  version: 0.3.0
+  version: 0.4.0
   description: API contract for Group 27 smart home software team. Frontend/backend are deployed on the server, while Orange Pi works as the hardware gateway and runs YOLO locally.
 servers:
   - url: http://82.156.238.244
@@ -141,9 +141,27 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/FaceEnrollResponse"
+  /api/persons/{person_id}/face-capture-request:
+    post:
+      summary: Queue an Orange Pi camera capture for face enrollment
+      parameters:
+        - $ref: "#/components/parameters/PersonId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FaceCaptureRequest"
+      responses:
+        "200":
+          description: Capture command queued
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FaceCaptureRequestResponse"
   /api/photos:
     get:
-      summary: List photos and recognition results
+      summary: List historical recognition event photos
       parameters:
         - name: limit
           in: query
@@ -157,6 +175,93 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PhotoListResponse"
+  /api/photos/latest:
+    get:
+      summary: Get latest recognition result for realtime display
+      parameters:
+        - name: device_id
+          in: query
+          schema:
+            type: string
+            default: orange-pi-main
+      responses:
+        "200":
+          description: Latest recognition result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PhotoResponse"
+  /api/detection-jobs:
+    get:
+      summary: List recent acceptance detection jobs
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: Detection job list
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DetectionJobListResponse"
+    post:
+      summary: Upload acceptance images or zip packages for Orange Pi YOLO processing
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                device_id:
+                  type: string
+                  default: orange-pi-main
+                fire_extinguisher_images:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                drone_images:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                fire_extinguisher_zip:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                drone_zip:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        "200":
+          description: Detection job queued and command created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DetectionJobResponse"
+  /api/detection-jobs/{job_id}:
+    get:
+      summary: Get one acceptance detection job with image results
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Detection job detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DetectionJobResponse"
   /api/commands:
     post:
       summary: Create a remote control command
@@ -207,7 +312,7 @@ paths:
                 $ref: "#/components/schemas/OkResponse"
   /api/device/photos:
     post:
-      summary: Device photo and Orange Pi YOLO result upload
+      summary: Device photo and Orange Pi recognition result upload
       requestBody:
         required: true
         content:
@@ -232,6 +337,24 @@ paths:
                   type: string
                   description: JSON string of YOLO labels generated on Orange Pi. Use [] when no object is detected.
                   example: '[{"label":"person","confidence":0.91},{"label":"light bulb","confidence":0.78}]'
+                face_result_json:
+                  type: string
+                  description: Optional JSON string of face recognition result generated on Orange Pi.
+                  example: '{"matched_person_id":"person_001","matched_name":"张三","confidence":0.86}'
+                access_decision:
+                  type: string
+                  enum: [allow, deny, unknown]
+                  description: Optional face access decision from Orange Pi.
+                source:
+                  type: string
+                  enum: [auto_face, fire_extinguisher, drone]
+                  default: auto_face
+                  description: auto_face for 0.5s face loop; fire_extinguisher/drone for active frontend-triggered detection.
+                mode:
+                  type: string
+                  enum: [latest, event]
+                  default: latest
+                  description: latest overwrites realtime result; event is used for active detection and still goes through 5s dedup.
       responses:
         "200":
           description: Saved photo and recognition result
@@ -239,6 +362,88 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PhotoResponse"
+  /api/device/face-captures:
+    post:
+      summary: Orange Pi uploads a camera-captured face sample for enrollment
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - device_id
+                - person_id
+                - image
+              properties:
+                device_id:
+                  type: string
+                  example: orange-pi-main
+                person_id:
+                  type: string
+                  example: person_001
+                command_id:
+                  type: string
+                  description: Optional CAPTURE_FACE_SAMPLE command id. When present, backend marks it done.
+                captured_at:
+                  type: string
+                  format: date-time
+                image:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Captured face enrollment result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceFaceCaptureResponse"
+  /api/device/face-library/sync:
+    get:
+      summary: Orange Pi pulls incremental face library changes
+      parameters:
+        - name: device_id
+          in: query
+          required: true
+          schema:
+            type: string
+            example: orange-pi-main
+        - name: since_version
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+            default: 100
+      responses:
+        "200":
+          description: Incremental face library changes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FaceLibrarySyncResponse"
+  /api/device/face-library/ack:
+    post:
+      summary: Orange Pi acknowledges a synced face library version
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FaceLibraryAck"
+      responses:
+        "200":
+          description: Sync ack result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OkResponse"
   /api/device/commands/pending:
     get:
       summary: Device pulls pending commands
@@ -255,6 +460,28 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CommandListResponse"
+  /api/device/detection-jobs/{job_id}/results:
+    post:
+      summary: Orange Pi uploads YOLO results for an acceptance detection job
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DetectionJobResultUpload"
+      responses:
+        "200":
+          description: Updated detection job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DetectionJobResponse"
   /api/device/commands/{command_id}/ack:
     post:
       summary: Device acknowledges command execution
@@ -405,6 +632,29 @@ components:
           enum: [student, teacher, guest]
         authorized:
           type: boolean
+    FaceCaptureRequest:
+      type: object
+      properties:
+        device_id:
+          type: string
+          default: orange-pi-main
+    FaceLibraryAck:
+      type: object
+      required:
+        - device_id
+        - synced_version
+      properties:
+        device_id:
+          type: string
+          example: orange-pi-main
+        synced_version:
+          type: integer
+          minimum: 0
+          example: 12
+        message:
+          type: string
+          nullable: true
+          example: ok
     Person:
       allOf:
         - $ref: "#/components/schemas/PersonCreate"
@@ -416,6 +666,95 @@ components:
             face_enrolled:
               type: boolean
               example: true
+    FaceSample:
+      type: object
+      properties:
+        id:
+          type: string
+          example: face_abc123
+        person_id:
+          type: string
+          example: person_001
+        file_url:
+          type: string
+          example: /uploads/faces/face_xxx.jpg
+        image_url:
+          type: string
+          example: http://82.156.238.244/uploads/faces/face_xxx.jpg
+        image_hash:
+          type: string
+          nullable: true
+          example: sha256_hex
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+        sync_version:
+          type: integer
+          nullable: true
+          example: 12
+    FaceSyncChange:
+      type: object
+      properties:
+        version:
+          type: integer
+          example: 12
+        change_type:
+          type: string
+          enum: [upsert, delete]
+        face_sample_id:
+          type: string
+          example: face_abc123
+        person_id:
+          type: string
+          example: person_001
+        member_name:
+          type: string
+          example: 张三
+        role:
+          type: string
+          enum: [student, teacher, guest]
+        authorized:
+          type: boolean
+        file_url:
+          type: string
+          nullable: true
+          example: /uploads/faces/face_xxx.jpg
+        image_url:
+          type: string
+          nullable: true
+          example: http://82.156.238.244/uploads/faces/face_xxx.jpg
+        image_hash:
+          type: string
+          nullable: true
+          example: sha256_hex
+        created_at:
+          type: string
+          format: date-time
+    FaceLibrarySync:
+      type: object
+      properties:
+        device_id:
+          type: string
+          example: orange-pi-main
+        from_version:
+          type: integer
+        to_version:
+          type: integer
+        latest_version:
+          type: integer
+        has_more:
+          type: boolean
+        server_time:
+          type: string
+          format: date-time
+        changes:
+          type: array
+          items:
+            $ref: "#/components/schemas/FaceSyncChange"
     RecognitionLabel:
       type: object
       properties:
@@ -448,7 +787,7 @@ components:
       properties:
         id:
           type: string
-          example: photo_001
+          example: latest_orange-pi-main
         device_id:
           type: string
           example: orange-pi-main
@@ -457,7 +796,7 @@ components:
           format: date-time
         file_url:
           type: string
-          example: /uploads/photo_001.jpg
+          example: /uploads/latest/orange-pi-main.jpg
         yolo_labels:
           type: array
           items:
@@ -467,6 +806,129 @@ components:
         access_decision:
           type: string
           enum: [allow, deny, unknown]
+        source:
+          type: string
+          enum: [auto_face, fire_extinguisher, drone]
+          example: auto_face
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+        event_key:
+          type: string
+          nullable: true
+          example: face:person:person_001
+        history_saved:
+          type: boolean
+          nullable: true
+          description: Present on upload response. True means this upload also entered historical photos after cooldown.
+        history_photo_id:
+          type: string
+          nullable: true
+        history_file_url:
+          type: string
+          nullable: true
+        cooldown_seconds:
+          type: integer
+          nullable: true
+          example: 5
+    DetectionJobItem:
+      type: object
+      properties:
+        id:
+          type: string
+          example: item_001
+        job_id:
+          type: string
+          example: det_abc123
+        expected_label:
+          type: string
+          enum: [fire_extinguisher, drone]
+        filename:
+          type: string
+        file_url:
+          type: string
+          example: /uploads/detection_jobs/det_abc123/fire_extinguisher_xxx.jpg
+        status:
+          type: string
+          enum: [queued, processing, done, failed]
+        yolo_labels:
+          type: array
+          items:
+            $ref: "#/components/schemas/RecognitionLabel"
+        error_message:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    DetectionJob:
+      type: object
+      properties:
+        id:
+          type: string
+          example: det_abc123
+        device_id:
+          type: string
+          example: orange-pi-main
+        status:
+          type: string
+          enum: [queued, processing, done, failed, partial]
+        expected_fire_count:
+          type: integer
+        expected_drone_count:
+          type: integer
+        total_count:
+          type: integer
+        completed_count:
+          type: integer
+        failed_count:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/DetectionJobItem"
+        command:
+          $ref: "#/components/schemas/Command"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    DetectionJobResultUpload:
+      type: object
+      required:
+        - device_id
+        - items
+      properties:
+        device_id:
+          type: string
+          example: orange-pi-main
+        items:
+          type: array
+          items:
+            type: object
+            required:
+              - item_id
+              - status
+              - yolo_labels
+            properties:
+              item_id:
+                type: string
+              status:
+                type: string
+                enum: [queued, processing, done, failed]
+              yolo_labels:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RecognitionLabel"
+              error_message:
+                type: string
+                nullable: true
     CommandCreate:
       type: object
       required:
@@ -478,7 +940,7 @@ components:
           example: orange-pi-main
         type:
           type: string
-          enum: [SET_LIGHT, SET_FAN, OPEN_DOOR, CLOSE_DOOR, REQUEST_PHOTO]
+          enum: [SET_LIGHT, SET_FAN, OPEN_DOOR, CLOSE_DOOR, REQUEST_PHOTO, REQUEST_DETECT_FIRE_EXTINGUISHER, REQUEST_DETECT_DRONE, PROCESS_DETECTION_PACKAGE, CAPTURE_FACE_SAMPLE]
         payload:
           type: object
           additionalProperties: true
@@ -597,6 +1059,51 @@ components:
               type: string
             face_enrolled:
               type: boolean
+            sample:
+              $ref: "#/components/schemas/FaceSample"
+        error:
+          $ref: "#/components/schemas/ApiError"
+    FaceCaptureRequestResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        data:
+          type: object
+          properties:
+            queued:
+              type: boolean
+            person_id:
+              type: string
+            command:
+              $ref: "#/components/schemas/Command"
+        error:
+          $ref: "#/components/schemas/ApiError"
+    DeviceFaceCaptureResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        data:
+          type: object
+          properties:
+            device_id:
+              type: string
+            person_id:
+              type: string
+            face_enrolled:
+              type: boolean
+            sample:
+              $ref: "#/components/schemas/FaceSample"
+        error:
+          $ref: "#/components/schemas/ApiError"
+    FaceLibrarySyncResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        data:
+          $ref: "#/components/schemas/FaceLibrarySync"
         error:
           $ref: "#/components/schemas/ApiError"
     PhotoResponse:
@@ -617,6 +1124,26 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Photo"
+        error:
+          $ref: "#/components/schemas/ApiError"
+    DetectionJobResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        data:
+          $ref: "#/components/schemas/DetectionJob"
+        error:
+          $ref: "#/components/schemas/ApiError"
+    DetectionJobListResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/DetectionJob"
         error:
           $ref: "#/components/schemas/ApiError"
     CommandResponse:

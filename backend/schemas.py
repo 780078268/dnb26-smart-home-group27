@@ -6,10 +6,33 @@ from pydantic import BaseModel, Field
 
 
 Role = Literal["student", "teacher", "guest"]
-CommandType = Literal["SET_LIGHT", "SET_FAN", "OPEN_DOOR", "CLOSE_DOOR", "REQUEST_PHOTO"]
+CommandType = Literal[
+    "SET_LIGHT",
+    "SET_FAN",
+    "OPEN_DOOR",
+    "CLOSE_DOOR",
+    "REQUEST_PHOTO",
+    "REQUEST_DETECT_FIRE_EXTINGUISHER",
+    "REQUEST_DETECT_DRONE",
+    "PROCESS_DETECTION_PACKAGE",
+    "CAPTURE_FACE_SAMPLE",
+]
 CommandStatus = Literal["pending", "sent", "done", "failed"]
 AckStatus = Literal["done", "failed"]
 AccessDecision = Literal["allow", "deny", "unknown"]
+DetectionItemStatus = Literal["queued", "processing", "done", "failed"]
+
+
+class DetectionJobResultItem(BaseModel):
+    item_id: str
+    status: DetectionItemStatus = "done"
+    yolo_labels: list[dict[str, Any]] = Field(default_factory=list)
+    error_message: str | None = None
+
+
+class DetectionJobResultUpload(BaseModel):
+    device_id: str
+    items: list[DetectionJobResultItem]
 
 
 class TelemetryInput(BaseModel):
@@ -34,6 +57,16 @@ class PersonPatch(BaseModel):
     authorized: bool | None = None
 
 
+class FaceCaptureRequest(BaseModel):
+    device_id: str = "orange-pi-main"
+
+
+class FaceLibraryAck(BaseModel):
+    device_id: str
+    synced_version: int = Field(ge=0)
+    message: str | None = None
+
+
 class CommandCreate(BaseModel):
     device_id: str
     type: CommandType
@@ -44,4 +77,3 @@ class CommandAck(BaseModel):
     device_id: str
     status: AckStatus
     message: str | None = None
-

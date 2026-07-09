@@ -1,11 +1,23 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import json
 from pathlib import Path
 import tempfile
 
 import httpx
+
+
+SAMPLE_JPEG = base64.b64decode(
+    "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////"
+    "2wBDAf//////////////////////////////////////////////////////////////////////////////////////"
+    "wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAX/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIQAxAAAAH/"
+    "xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAEFAqf/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oACAEDAQE/ASP/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oA"
+    "CAICAQE/ASP/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAY/Al//xAAUEAEAAAAAAAAAAAAAAAAAAAAA/9oACAEBAAE/Iqf/2gAMAwEAAgADAAAAEP/E"
+    "FBQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQMBAT8QH//EFBQRAQAAAAAAAAAAAAAAAAAAABD/2gAIAQIBAT8QH//EFBABAQAAAAAAAAAAAAAAAAAAARD/2gAI"
+    "AQEABj8QH//Z"
+)
 
 
 def require_ok(response: httpx.Response) -> dict:
@@ -37,14 +49,14 @@ def main() -> None:
 
         command = {
             "device_id": "orange-pi-main",
-            "type": "SET_LIGHT",
-            "payload": {"level": 80},
+            "type": "REQUEST_DETECT_DRONE",
+            "payload": {"target": "drone", "upload_mode": "event"},
         }
         created = require_ok(client.post(f"{base_url}/api/commands", json=command))
         print("command", created)
 
         with tempfile.NamedTemporaryFile(suffix=".jpg") as image:
-            image.write(b"fake-photo-image")
+            image.write(SAMPLE_JPEG)
             image.flush()
             labels = [{"label": "person", "confidence": 0.91}]
             with Path(image.name).open("rb") as fh:
@@ -54,11 +66,16 @@ def main() -> None:
                         data={
                             "device_id": "orange-pi-main",
                             "yolo_labels_json": json.dumps(labels),
+                            "source": "auto_face",
                         },
                         files={"image": ("smoke.jpg", fh, "image/jpeg")},
                     )
                 )
             print("photo", photo)
+            print(
+                "latest_photo",
+                require_ok(client.get(f"{base_url}/api/photos/latest", params={"device_id": "orange-pi-main"})),
+            )
 
         pending = require_ok(
             client.get(f"{base_url}/api/device/commands/pending", params={"device_id": "orange-pi-main"})
@@ -68,4 +85,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
