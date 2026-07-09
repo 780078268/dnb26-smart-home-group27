@@ -704,7 +704,7 @@
             const timer = setTimeout(() => controller.abort(), 6000);
             try {
                 const res = await fetch(`${API_BASE}${endpoint}`, { signal: controller.signal });
-                const json = await res.json();
+                const json = await readApiJson(res);
                 if (!res.ok || !json.ok) {
                     throw new Error(json.error?.message || 'request failed');
                 }
@@ -715,6 +715,15 @@
                 return cloneMock(MOCK_DATA[mockDataKey]);
             } finally {
                 clearTimeout(timer);
+            }
+        }
+
+        async function readApiJson(response) {
+            const text = await response.text();
+            try {
+                return text ? JSON.parse(text) : {};
+            } catch {
+                throw new Error(text.slice(0, 160) || `HTTP ${response.status}`);
             }
         }
 
@@ -944,7 +953,7 @@
                 button.disabled = true;
                 showToast('正在上传验收图片包...');
                 const res = await fetch(`${API_BASE}/detection-jobs`, { method: 'POST', body: formData });
-                const json = await res.json();
+                const json = await readApiJson(res);
                 if (!res.ok || !json.ok) throw new Error(json.error?.message || 'upload failed');
                 setConnectionStatus(true);
                 activeDetectionJobId = json.data.id;

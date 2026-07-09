@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
 import hashlib
+import io
 import json
 import shutil
 import time
@@ -223,7 +224,8 @@ def save_detection_zip(file: UploadFile, job_dir: Path, expected_label: str) -> 
     job_dir.mkdir(parents=True, exist_ok=True)
     saved: list[tuple[str, str]] = []
     try:
-        with zipfile.ZipFile(file.file) as archive:
+        zip_bytes = file.file.read()
+        with zipfile.ZipFile(io.BytesIO(zip_bytes)) as archive:
             for member in archive.infolist():
                 if member.is_dir() or not is_image_filename(member.filename):
                     continue
