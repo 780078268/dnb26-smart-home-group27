@@ -7,7 +7,7 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -17,20 +17,20 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'sans-serif'],
-                        mono: ['Space Grotesk', 'monospace'],
+                        sans: ['Inter', 'PingFang SC', 'Microsoft YaHei', 'sans-serif'],
+                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
                     },
                     colors: {
                         dark: {
-                            950: '#090a0f', // 极深邃的微蓝底色
-                            900: '#12141c', // 卡片暗色
-                            800: '#1a1d29', // 悬浮及输入框暗色
-                            700: '#25293a',
+                            950: '#0b1020',
+                            900: '#111827',
+                            800: '#1f2937',
+                            700: '#374151',
                         },
                         accent: {
-                            cyber: '#38bdf8',  // 精准数字蓝
-                            emerald: '#34d399',// 语义安全绿
-                            crimson: '#f87171',// 语义警报红
+                            cyber: '#60a5fa',
+                            emerald: '#22c55e',
+                            crimson: '#ef4444',
                         }
                     },
                     letterSpacing: {
@@ -43,9 +43,8 @@
     </script>
 
     <style>
-        /* Awwwards 顶奢数字美学：严苛的暗黑体系与极其克制的发光 */
         body {
-            background-color: #090a0f;
+            background-color: #0b1020;
             color: #f8fafc;
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
@@ -58,20 +57,19 @@
             height: 4px;
         }
         ::-webkit-scrollbar-track {
-            background: #090a0f;
+            background: #0b1020;
         }
         ::-webkit-scrollbar-thumb {
-            background: #25293a;
+            background: #374151;
             border-radius: 2px;
         }
 
-        /* 高级 SaaS 系统的点阵背景纹理 (Dot Matrix Grid) */
         .dot-matrix {
-            background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0);
-            background-size: 24px 24px;
+            background:
+                linear-gradient(180deg, rgba(96, 165, 250, 0.05), rgba(11, 16, 32, 0) 220px),
+                #0b1020;
         }
 
-        /* Tab 动画无缝过渡 */
         .tab-content {
             display: none;
             opacity: 0;
@@ -84,28 +82,26 @@
             transform: translateY(0);
         }
 
-        /* 极其内敛的高级边框发光效应，绝非廉价的炫技渐变 */
         .saas-card {
-            background: #12141c;
-            border: 1px solid rgba(255, 255, 255, 0.04);
+            background: #111827;
+            border: 1px solid rgba(148, 163, 184, 0.14);
             border-radius: 8px;
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
         .saas-card:hover {
-            border-color: rgba(56, 189, 248, 0.2);
-            box-shadow: 0 12px 40px -12px rgba(0, 0, 0, 0.7);
+            border-color: rgba(96, 165, 250, 0.28);
+            box-shadow: 0 12px 28px -20px rgba(15, 23, 42, 0.9);
         }
 
-        /* 现代原生 Range 滑块美化 */
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
             width: 14px;
             height: 14px;
             border-radius: 50%;
-            background: #38bdf8;
+            background: #60a5fa;
             cursor: pointer;
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+            box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.16);
             transition: transform 0.1s ease;
         }
         input[type="range"]::-webkit-slider-thumb:hover {
@@ -120,7 +116,7 @@
 
         button:focus-visible,
         input:focus-visible {
-            outline: 2px solid #38bdf8;
+            outline: 2px solid #60a5fa;
             outline-offset: 3px;
         }
 
@@ -148,29 +144,33 @@
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     <div class="h-5 w-1.5 bg-accent-cyber rounded-full"></div>
-                    <span class="font-mono text-sm tracking-widest text-white/90 font-bold uppercase">第27组网关</span>
+                    <span class="text-sm text-white/90 font-semibold">第27组智能家居</span>
                 </div>
-                <span class="font-mono text-[10px] text-white/30 bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.02]">v0.2 // 联调版</span>
+                <span class="font-mono text-[10px] text-white/40 bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.06]">v0.4 联调版</span>
             </div>
 
             <nav class="space-y-2 flex flex-row lg:flex-col overflow-x-auto lg:overflow-visible gap-2 lg:gap-0" role="tablist" aria-label="控制台视图">
-                <button type="button" onclick="switchTab('dashboard')" id="nav-dashboard" role="tab" aria-selected="true" aria-controls="tab-dashboard" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-xs font-mono font-medium tracking-wider uppercase transition-all duration-200 bg-white/[0.04] text-accent-cyber border border-white/[0.05]">
+                <button type="button" onclick="switchTab('dashboard')" id="nav-dashboard" role="tab" aria-selected="true" aria-controls="tab-dashboard" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 bg-white/[0.04] text-accent-cyber border border-white/[0.08]">
                     <i data-lucide="layout-grid" class="w-4 h-4"></i>
                     <span>实时总览</span>
                 </button>
-                <button type="button" onclick="switchTab('history')" id="nav-history" role="tab" aria-selected="false" aria-controls="tab-history" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-xs font-mono font-medium tracking-wider uppercase transition-all duration-200 text-white/40 hover:text-white/80 hover:bg-white/[0.02]">
+                <button type="button" onclick="switchTab('history')" id="nav-history" role="tab" aria-selected="false" aria-controls="tab-history" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 text-white/50 hover:text-white/80 hover:bg-white/[0.04]">
                     <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
                     <span>遥测历史</span>
                 </button>
-                <button type="button" onclick="switchTab('access')" id="nav-access" role="tab" aria-selected="false" aria-controls="tab-access" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-xs font-mono font-medium tracking-wider uppercase transition-all duration-200 text-white/40 hover:text-white/80 hover:bg-white/[0.02]">
+                <button type="button" onclick="switchTab('access')" id="nav-access" role="tab" aria-selected="false" aria-controls="tab-access" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 text-white/50 hover:text-white/80 hover:bg-white/[0.04]">
                     <i data-lucide="shield-check" class="w-4 h-4"></i>
                     <span>门禁档案</span>
+                </button>
+                <button type="button" onclick="switchTab('acceptance')" id="nav-acceptance" role="tab" aria-selected="false" aria-controls="tab-acceptance" class="w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 text-white/50 hover:text-white/80 hover:bg-white/[0.04]">
+                    <i data-lucide="package-check" class="w-4 h-4"></i>
+                    <span>验收检测</span>
                 </button>
             </nav>
         </div>
 
         <div class="pt-6 border-t border-white/[0.04] mt-6 lg:mt-0 hidden lg:block">
-            <div class="flex items-center justify-between text-[11px] font-mono">
+            <div class="flex items-center justify-between text-xs">
                 <span class="text-white/30">网关状态</span>
                 <div class="flex items-center space-x-2">
                     <span class="w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse" id="conn-status-dot"></span>
@@ -185,29 +185,29 @@
         <div id="tab-dashboard" class="tab-content active space-y-10">
             <header class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-white/[0.04] pb-6">
                 <div>
-                    <p class="text-[11px] font-mono tracking-widest text-accent-cyber uppercase">环境与设备监控</p>
-                    <h2 class="text-3xl font-light text-white tracking-tighter mt-1 font-sans">智能家居控制台 // 实时状态</h2>
+                    <p class="text-xs text-accent-cyber font-medium">实时状态</p>
+                    <h2 class="text-2xl md:text-3xl font-semibold text-white mt-1 font-sans">智能家居联调台</h2>
                 </div>
-                <div class="font-mono text-xs text-white/40 bg-dark-900 px-4 py-2 rounded-lg border border-white/[0.04]">
+                <div class="font-mono text-xs text-white/50 bg-dark-900 px-4 py-2 rounded-lg border border-white/[0.08]">
                     同步时间： <span id="last-update-time" class="text-white/80 font-medium">--</span>
                 </div>
             </header>
 
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-                <div class="saas-card p-6 rounded-xl flex flex-col justify-between min-h-[140px]">
+                <div class="saas-card p-5 rounded-xl flex flex-col justify-between min-h-[128px]">
                     <div class="flex items-center justify-between text-white/40">
-                        <span class="text-[11px] font-mono uppercase tracking-wider">01 // 温度</span>
+                        <span class="text-sm text-white/55">室内温度</span>
                         <i data-lucide="thermometer" class="w-4 h-4 text-white/20"></i>
                     </div>
                     <div class="flex items-baseline mt-4">
-                        <span class="text-5xl font-light text-white tracking-tightest font-mono" id="val-temp">--</span>
+                        <span class="text-4xl font-semibold text-white font-mono" id="val-temp">--</span>
                         <span class="text-sm font-mono text-white/40 ml-1">°C</span>
                     </div>
                 </div>
 
-                <div class="saas-card p-6 rounded-xl flex flex-col justify-between min-h-[140px]">
+                <div class="saas-card p-5 rounded-xl flex flex-col justify-between min-h-[128px]">
                     <div class="flex items-center justify-between text-white/40">
-                        <span class="text-[11px] font-mono uppercase tracking-wider">02 // 入户门锁</span>
+                        <span class="text-sm text-white/55">入户门锁</span>
                         <i data-lucide="lock" class="w-4 h-4 text-white/20"></i>
                     </div>
                     <div class="flex items-center space-x-2 mt-4">
@@ -216,20 +216,20 @@
                     </div>
                 </div>
 
-                <div class="saas-card p-6 rounded-xl flex flex-col justify-between min-h-[140px]">
+                <div class="saas-card p-5 rounded-xl flex flex-col justify-between min-h-[128px]">
                     <div class="flex items-center justify-between text-white/40">
-                        <span class="text-[11px] font-mono uppercase tracking-wider">03 // 灯光亮度</span>
+                        <span class="text-sm text-white/55">灯光亮度</span>
                         <i data-lucide="sun" class="w-4 h-4 text-white/20"></i>
                     </div>
                     <div class="flex items-baseline mt-4">
-                        <span class="text-5xl font-light text-white tracking-tightest font-mono" id="val-light">--</span>
+                        <span class="text-4xl font-semibold text-white font-mono" id="val-light">--</span>
                         <span class="text-sm font-mono text-white/40 ml-1">%</span>
                     </div>
                 </div>
 
-                <div class="saas-card p-6 rounded-xl flex flex-col justify-between min-h-[140px]">
+                <div class="saas-card p-5 rounded-xl flex flex-col justify-between min-h-[128px]">
                     <div class="flex items-center justify-between text-white/40">
-                        <span class="text-[11px] font-mono uppercase tracking-wider">04 // 风扇通风</span>
+                        <span class="text-sm text-white/55">风扇通风</span>
                         <i data-lucide="wind" class="w-4 h-4 text-white/20"></i>
                     </div>
                     <div class="flex items-center space-x-2 mt-4">
@@ -242,14 +242,14 @@
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
                 
                 <div class="saas-card rounded-xl p-6 lg:col-span-5 space-y-8">
-                    <div class="border-b border-white/[0.04] pb-4">
-                        <h3 class="text-xs font-mono font-medium tracking-wider uppercase text-white/80">硬件控制面板</h3>
+                    <div class="border-b border-white/[0.08] pb-4">
+                        <h3 class="text-sm font-semibold text-white/85">硬件控制</h3>
                     </div>
                     
                     <div class="space-y-8">
                         <div class="space-y-3">
                             <div class="flex justify-between items-center text-xs font-mono">
-                                <label class="text-white/50 uppercase">灯光亮度</label>
+                                <label class="text-white/55">灯光亮度</label>
                                 <span class="text-accent-cyber" id="ctrl-light-val">--</span>
                             </div>
                             <div class="flex items-center space-x-4 bg-dark-950 p-3 rounded-lg border border-white/[0.03]">
@@ -261,8 +261,8 @@
 
                         <div class="flex items-center justify-between bg-dark-950 p-4 rounded-lg border border-white/[0.03]">
                             <div>
-                                <h4 class="text-xs font-mono text-white/80 uppercase">通风系统</h4>
-                                <p class="text-[11px] text-white/40 mt-1 font-sans">智能温控 / 手动控制</p>
+                                <h4 class="text-sm font-medium text-white/85">通风系统</h4>
+                                <p class="text-xs text-white/45 mt-1 font-sans">当前可手动切换</p>
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" id="input-fan" aria-label="切换风扇状态" class="sr-only peer" onchange="sendControl('SET_FAN', {on: this.checked})">
@@ -272,14 +272,14 @@
 
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between bg-dark-950 p-4 rounded-lg border border-white/[0.03] gap-4 sm:gap-0">
                             <div>
-                                <h4 class="text-xs font-mono text-white/80 uppercase">门锁执行器</h4>
-                                <p class="text-[11px] text-white/40 mt-1 font-sans">远程执行开锁 / 上锁指令</p>
+                                <h4 class="text-sm font-medium text-white/85">门锁</h4>
+                                <p class="text-xs text-white/45 mt-1 font-sans">远程开锁 / 上锁</p>
                             </div>
                             <div class="flex space-x-2 font-mono text-xs">
-                                <button type="button" onclick="sendControl('OPEN_DOOR')" class="px-4 py-2 rounded bg-white/5 text-white hover:bg-white/10 border border-white/10 transition-colors uppercase">
+                                <button type="button" onclick="sendControl('OPEN_DOOR')" class="px-4 py-2 rounded bg-white/5 text-white hover:bg-white/10 border border-white/10 transition-colors">
                                     开锁
                                 </button>
-                                <button type="button" onclick="sendControl('CLOSE_DOOR')" class="px-4 py-2 rounded bg-white text-dark-950 hover:bg-white/90 font-medium transition-colors uppercase">
+                                <button type="button" onclick="sendControl('CLOSE_DOOR')" class="px-4 py-2 rounded bg-white text-dark-950 hover:bg-white/90 font-medium transition-colors">
                                     上锁
                                 </button>
                             </div>
@@ -289,17 +289,17 @@
 
                 <div class="saas-card rounded-xl p-6 lg:col-span-7 flex flex-col space-y-6">
                     <div class="flex justify-between items-center border-b border-white/[0.04] pb-4 gap-3">
-                        <h3 class="text-xs font-mono font-medium tracking-wider uppercase text-white/80">视觉识别画面</h3>
+                        <h3 class="text-sm font-semibold text-white/85">视觉识别</h3>
                         <div class="flex flex-wrap items-center justify-end gap-2">
-                            <button type="button" onclick="requestDetection('fire_extinguisher')" class="px-3 py-1.5 rounded bg-white/[0.04] text-white/70 hover:text-white hover:bg-white/[0.08] border border-white/[0.08] text-xs font-mono transition-colors flex items-center space-x-1.5">
+                            <button type="button" onclick="requestDetection('fire_extinguisher')" class="px-3 py-2 rounded bg-white/[0.04] text-white/70 hover:text-white hover:bg-white/[0.08] border border-white/[0.08] text-xs transition-colors flex items-center space-x-1.5">
                                 <i data-lucide="flame" class="w-3 h-3 text-accent-crimson"></i>
-                                <span>识别灭火器</span>
+                                <span>灭火器</span>
                             </button>
-                            <button type="button" onclick="requestDetection('drone')" class="px-3 py-1.5 rounded bg-white/[0.04] text-white/70 hover:text-white hover:bg-white/[0.08] border border-white/[0.08] text-xs font-mono transition-colors flex items-center space-x-1.5">
+                            <button type="button" onclick="requestDetection('drone')" class="px-3 py-2 rounded bg-white/[0.04] text-white/70 hover:text-white hover:bg-white/[0.08] border border-white/[0.08] text-xs transition-colors flex items-center space-x-1.5">
                                 <i data-lucide="plane" class="w-3 h-3 text-accent-cyber"></i>
-                                <span>识别无人机</span>
+                                <span>无人机</span>
                             </button>
-                            <button type="button" onclick="fetchPhotos()" aria-label="刷新识别图片" class="text-xs font-mono text-accent-cyber hover:opacity-80 flex items-center space-x-1.5 transition-opacity">
+                            <button type="button" onclick="fetchPhotos()" aria-label="刷新识别图片" class="px-3 py-2 rounded text-xs text-accent-cyber hover:bg-white/[0.04] flex items-center space-x-1.5 transition-colors">
                                 <i data-lucide="refresh-cw" class="w-3 h-3"></i>
                                 <span>刷新</span>
                             </button>
@@ -308,7 +308,7 @@
                     
                     <div class="aspect-[16/9] w-full bg-dark-950 rounded-lg border border-white/[0.04] overflow-hidden relative flex items-center justify-center">
                         <img id="latest-photo" src="" alt="实时识别画面" class="w-full h-full object-cover hidden">
-                        <div id="photo-placeholder" class="text-white/20 flex flex-col items-center font-mono text-xs tracking-wider text-center px-4">
+                        <div id="photo-placeholder" class="text-white/25 flex flex-col items-center text-xs text-center px-4">
                             <i data-lucide="video-off" class="w-6 h-6 mb-3 opacity-40 text-white"></i>
                             <span id="photo-placeholder-title">暂无识别画面</span>
                             <span id="photo-placeholder-detail" class="mt-2 text-[10px] text-white/30 normal-case tracking-normal"></span>
@@ -317,14 +317,14 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                         <div class="space-y-2">
-                            <span class="text-[10px] font-mono text-white/40 tracking-widest uppercase">YOLO 目标检测</span>
+                            <span class="text-xs text-white/45">目标检测</span>
                             <div id="yolo-labels" class="flex flex-wrap gap-2 pt-1">
                                 <span class="text-xs text-white/20 font-mono">等待画面...</span>
                             </div>
                         </div>
                         <div class="space-y-2">
-                            <span class="text-[10px] font-mono text-white/40 tracking-widest uppercase">人脸识别鉴权</span>
-                            <div id="face-result" class="p-3 rounded-lg border border-white/[0.03] bg-dark-950 font-mono text-xs text-white/50 flex items-center space-x-2">
+                            <span class="text-xs text-white/45">人脸鉴权</span>
+                            <div id="face-result" class="p-3 rounded-lg border border-white/[0.08] bg-dark-950 text-xs text-white/55 flex items-center space-x-2">
                                 <i data-lucide="fingerprint" class="w-4 h-4 text-white/30"></i>
                                 <span>待机</span>
                             </div>
@@ -338,10 +338,10 @@
         <div id="tab-history" class="tab-content space-y-8">
             <header class="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 border-b border-white/[0.04] pb-6">
                 <div>
-                    <p class="text-[11px] font-mono tracking-widest text-accent-cyber uppercase">时序数据</p>
-                    <h2 class="text-3xl font-light text-white tracking-tighter mt-1 font-sans">设备遥测历史记录</h2>
+                    <p class="text-xs text-accent-cyber font-medium">历史记录</p>
+                    <h2 class="text-2xl md:text-3xl font-semibold text-white mt-1 font-sans">设备遥测</h2>
                 </div>
-                <button type="button" onclick="fetchHistory()" class="px-4 py-2 rounded bg-white/5 text-white hover:bg-white/10 border border-white/10 font-mono text-xs transition-colors flex items-center justify-center space-x-2 w-full sm:w-auto uppercase">
+                <button type="button" onclick="fetchHistory()" class="px-4 py-2 rounded bg-white/5 text-white hover:bg-white/10 border border-white/10 text-xs transition-colors flex items-center justify-center space-x-2 w-full sm:w-auto">
                     <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
                     <span>刷新记录</span>
                 </button>
@@ -349,15 +349,15 @@
 
             <div class="saas-card rounded-xl overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left font-mono text-xs whitespace-nowrap">
+                    <table class="w-full text-left text-sm whitespace-nowrap">
                         <thead class="bg-white/[0.02] text-white/40 border-b border-white/[0.04]">
                             <tr>
-                                <th class="px-6 py-4 font-medium tracking-wider">时间戳</th>
-                                <th class="px-6 py-4 font-medium tracking-wider">温度 (°C)</th>
-                                <th class="px-6 py-4 font-medium tracking-wider">门锁</th>
-                                <th class="px-6 py-4 font-medium tracking-wider">窗户</th>
-                                <th class="px-6 py-4 font-medium tracking-wider">灯光 (%)</th>
-                                <th class="px-6 py-4 font-medium tracking-wider">风扇状态</th>
+                                <th class="px-6 py-4 font-medium">时间戳</th>
+                                <th class="px-6 py-4 font-medium">温度 (°C)</th>
+                                <th class="px-6 py-4 font-medium">门锁</th>
+                                <th class="px-6 py-4 font-medium">窗户</th>
+                                <th class="px-6 py-4 font-medium">灯光 (%)</th>
+                                <th class="px-6 py-4 font-medium">风扇状态</th>
                             </tr>
                         </thead>
                         <tbody id="history-table-body" class="divide-y divide-white/[0.02] text-white/70">
@@ -372,28 +372,28 @@
 
         <div id="tab-access" class="tab-content space-y-8">
             <header class="border-b border-white/[0.04] pb-6">
-                <p class="text-[11px] font-mono tracking-widest text-accent-cyber uppercase">身份与门禁管理</p>
-                <h2 class="text-3xl font-light text-white tracking-tighter mt-1 font-sans">授权人员与门禁鉴权管理</h2>
+                <p class="text-xs text-accent-cyber font-medium">门禁管理</p>
+                <h2 class="text-2xl md:text-3xl font-semibold text-white mt-1 font-sans">授权人员</h2>
             </header>
 
             <div class="saas-card rounded-xl overflow-hidden">
                 <div class="p-5 border-b border-white/[0.04] bg-white/[0.01] flex justify-between items-center">
-                    <span class="text-xs font-mono font-medium tracking-wider uppercase text-white/70">已登记人员</span>
-                    <button type="button" onclick="registerPerson()" class="px-3 py-1.5 rounded bg-white text-dark-950 font-mono text-xs font-medium hover:bg-white/90 transition-colors uppercase flex items-center space-x-1">
+                    <span class="text-sm font-medium text-white/75">已登记人员</span>
+                    <button type="button" onclick="registerPerson()" class="px-3 py-2 rounded bg-white text-dark-950 text-xs font-medium hover:bg-white/90 transition-colors flex items-center space-x-1">
                         <i data-lucide="plus" class="w-3.5 h-3.5"></i>
                         <span>登记人员</span>
                     </button>
                 </div>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left font-mono text-xs whitespace-nowrap">
+                    <table class="w-full text-left text-sm whitespace-nowrap">
                         <thead class="bg-white/[0.02] text-white/40 border-b border-white/[0.04]">
                             <tr>
-                                <th class="px-6 py-4 font-medium tracking-wider">编号</th>
-                                <th class="px-6 py-4 font-medium tracking-wider">姓名</th>
-                                <th class="px-6 py-4 font-medium tracking-wider">角色</th>
-                                <th class="px-6 py-4 font-medium tracking-wider">门禁权限</th>
-                                <th class="px-6 py-4 font-medium tracking-wider">人脸样本</th>
-                                <th class="px-6 py-4 font-medium tracking-wider text-right">操作</th>
+                                <th class="px-6 py-4 font-medium">编号</th>
+                                <th class="px-6 py-4 font-medium">姓名</th>
+                                <th class="px-6 py-4 font-medium">角色</th>
+                                <th class="px-6 py-4 font-medium">门禁权限</th>
+                                <th class="px-6 py-4 font-medium">人脸样本</th>
+                                <th class="px-6 py-4 font-medium text-right">操作</th>
                             </tr>
                         </thead>
                         <tbody id="persons-table-body" class="divide-y divide-white/[0.02] text-white/70">
@@ -403,9 +403,116 @@
             </div>
         </div>
 
+        <div id="tab-acceptance" class="tab-content space-y-8">
+            <header class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 border-b border-white/[0.04] pb-6">
+                <div>
+                    <p class="text-xs text-accent-cyber font-medium">验收检测</p>
+                    <h2 class="text-2xl md:text-3xl font-semibold text-white mt-1 font-sans">灭火器 / 无人机图片包</h2>
+                    <p class="text-sm text-white/45 mt-3">上传验收图片或 ZIP，后端会生成任务，香橙派轮询后下载图片并回传 YOLO 结果。</p>
+                </div>
+                <button type="button" onclick="fetchDetectionJobs()" class="px-4 py-2 rounded bg-white/5 text-white hover:bg-white/10 border border-white/10 text-xs transition-colors flex items-center justify-center space-x-2 w-full sm:w-auto">
+                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                    <span>刷新任务</span>
+                </button>
+            </header>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="saas-card rounded-xl p-6 space-y-4">
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <h3 class="text-sm font-semibold text-white/85">灭火器图片</h3>
+                            <p class="text-xs text-white/40 mt-1">支持多选图片或一个 ZIP，建议 12 张。</p>
+                        </div>
+                        <i data-lucide="flame" class="w-5 h-5 text-accent-crimson"></i>
+                    </div>
+                    <label class="block border border-dashed border-white/15 rounded-lg p-4 bg-dark-950 hover:border-white/30 transition-colors cursor-pointer">
+                        <input id="fire-files" type="file" accept="image/*,.zip" multiple class="hidden" onchange="updateDetectionSelection()">
+                        <span class="text-sm text-white/70">选择灭火器图片或 ZIP</span>
+                        <span class="block text-xs text-white/35 mt-1">jpg / png / webp / zip</span>
+                    </label>
+                    <div id="fire-file-summary" class="text-xs text-white/35 min-h-[20px]">还未选择文件</div>
+                </div>
+
+                <div class="saas-card rounded-xl p-6 space-y-4">
+                    <div class="flex items-start justify-between gap-4">
+                        <div>
+                            <h3 class="text-sm font-semibold text-white/85">无人机图片</h3>
+                            <p class="text-xs text-white/40 mt-1">支持多选图片或一个 ZIP，建议 12 张。</p>
+                        </div>
+                        <i data-lucide="plane" class="w-5 h-5 text-accent-cyber"></i>
+                    </div>
+                    <label class="block border border-dashed border-white/15 rounded-lg p-4 bg-dark-950 hover:border-white/30 transition-colors cursor-pointer">
+                        <input id="drone-files" type="file" accept="image/*,.zip" multiple class="hidden" onchange="updateDetectionSelection()">
+                        <span class="text-sm text-white/70">选择无人机图片或 ZIP</span>
+                        <span class="block text-xs text-white/35 mt-1">jpg / png / webp / zip</span>
+                    </label>
+                    <div id="drone-file-summary" class="text-xs text-white/35 min-h-[20px]">还未选择文件</div>
+                </div>
+            </div>
+
+            <div class="saas-card rounded-xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div class="text-sm text-white/60" id="detection-upload-hint">验收包通常是 12 张灭火器 + 12 张无人机；数量不一致也可以先上传联调。</div>
+                <button type="button" id="submit-detection-btn" onclick="submitDetectionJob()" class="px-5 py-2.5 rounded bg-white text-dark-950 text-sm font-medium hover:bg-white/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                    上传并派发给香橙派
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
+                <div class="saas-card rounded-xl p-6 xl:col-span-1 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-sm font-semibold text-white/85">最近任务</h3>
+                        <span class="text-[11px] text-white/35" id="detection-job-count">--</span>
+                    </div>
+                    <div id="detection-job-list" class="space-y-2 text-sm text-white/50">
+                        <div class="text-xs text-white/30">暂无任务</div>
+                    </div>
+                </div>
+
+                <div class="saas-card rounded-xl p-6 xl:col-span-2 space-y-5">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div>
+                            <h3 class="text-sm font-semibold text-white/85">检测结果</h3>
+                            <p class="text-xs text-white/35 mt-1" id="detection-active-job">请选择或上传一个任务</p>
+                        </div>
+                        <div id="detection-summary" class="flex flex-wrap gap-2 text-xs"></div>
+                    </div>
+                    <div id="detection-results" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="text-xs text-white/30 border border-white/[0.06] rounded-lg p-6 text-center">等待检测任务</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </main>
 
-    <div id="toast" class="fixed bottom-6 right-6 bg-dark-900 border border-white/10 text-white/90 px-4 py-3 rounded shadow-2xl font-mono text-xs tracking-wider transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center space-x-3">
+    <div id="face-camera-modal" class="fixed inset-0 hidden z-40 bg-black/75 backdrop-blur-sm items-center justify-center p-4">
+        <div class="w-full max-w-2xl rounded-xl border border-white/10 bg-dark-900 shadow-2xl overflow-hidden">
+            <div class="p-4 border-b border-white/[0.06] flex items-center justify-between">
+                <div>
+                    <h3 class="text-sm font-semibold text-white/85">本机拍照录入</h3>
+                    <p id="face-camera-status" class="text-xs text-white/35 mt-1">摄像头准备中</p>
+                </div>
+                <button type="button" onclick="closeFaceCamera()" aria-label="关闭本机摄像头" class="w-8 h-8 rounded flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.06] transition-colors">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+            <div class="bg-black aspect-video overflow-hidden">
+                <video id="face-camera-video" autoplay playsinline muted class="w-full h-full object-cover"></video>
+            </div>
+            <div class="p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <span class="text-xs text-white/35">照片会直接上传到后端人脸库</span>
+                <div class="flex items-center justify-end gap-2">
+                    <button type="button" onclick="closeFaceCamera()" class="px-4 py-2 rounded bg-white/5 text-white/65 hover:bg-white/10 border border-white/10 text-xs transition-colors">取消</button>
+                    <button type="button" id="face-camera-capture-btn" onclick="captureFacePhoto()" class="px-4 py-2 rounded bg-white text-dark-950 text-xs font-medium hover:bg-white/90 transition-colors flex items-center space-x-1.5">
+                        <i data-lucide="camera" class="w-3.5 h-3.5"></i>
+                        <span>拍照录入</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-6 right-6 bg-dark-900 border border-white/10 text-white/90 px-4 py-3 rounded shadow-2xl text-xs transform translate-y-20 opacity-0 transition-all duration-300 z-50 flex items-center space-x-3">
         <div class="w-1.5 h-1.5 rounded-full bg-accent-cyber" id="toast-dot"></div>
         <span id="toast-msg">系统就绪</span>
     </div>
@@ -419,9 +526,14 @@
 
         renderIcons();
 
-        const API_ORIGIN = (window.SMART_HOME_API_ORIGIN || 'http://82.156.238.244').replace(/\/$/, '');
+        const LOCAL_API_ORIGIN = ['localhost', '127.0.0.1'].includes(window.location.hostname) ? 'http://127.0.0.1:8000' : 'http://82.156.238.244';
+        const API_ORIGIN = (window.SMART_HOME_API_ORIGIN || LOCAL_API_ORIGIN).replace(/\/$/, '');
         const API_BASE = `${API_ORIGIN}/api`;
         const DEVICE_ID = 'orange-pi-main';
+        let activeDetectionJobId = null;
+        let detectionPollTimer = null;
+        let faceCameraStream = null;
+        let faceCameraPersonId = null;
 
         const MOCK_DATA = {
             latestStatus: {
@@ -501,7 +613,7 @@
         function formatTime(isoString) {
             if (!isoString) return '--';
             const date = new Date(isoString);
-            return date.toLocaleTimeString('zh-CN', { hour12: false }) + ' // ' + date.toLocaleDateString('zh-CN');
+            return date.toLocaleString('zh-CN', { hour12: false });
         }
 
         function formatShortTime(isoString) {
@@ -572,17 +684,18 @@
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.getElementById(`tab-${tabId}`).classList.add('active');
 
-            ['dashboard', 'history', 'access'].forEach(id => {
+            ['dashboard', 'history', 'access', 'acceptance'].forEach(id => {
                 const btn = document.getElementById(`nav-${id}`);
                 btn.setAttribute('aria-selected', String(id === tabId));
-                btn.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-xs font-mono font-medium tracking-wider uppercase transition-all duration-200 text-white/40 hover:text-white/80 hover:bg-white/[0.02]";
+                btn.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 text-white/50 hover:text-white/80 hover:bg-white/[0.04]";
             });
 
             const activeBtn = document.getElementById(`nav-${tabId}`);
-            activeBtn.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-xs font-mono font-medium tracking-wider uppercase transition-all duration-200 bg-white/[0.04] text-accent-cyber border border-white/[0.05]";
+            activeBtn.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 bg-white/[0.04] text-accent-cyber border border-white/[0.08]";
 
             if (tabId === 'history') fetchHistory();
             if (tabId === 'access') fetchPersons();
+            if (tabId === 'acceptance') fetchDetectionJobs();
         }
 
         async function fetchData(endpoint, mockDataKey) {
@@ -609,7 +722,7 @@
             const text = document.getElementById('conn-status-text');
             if (dot && text) {
                 dot.className = connected ? "w-1.5 h-1.5 rounded-full bg-accent-emerald animate-pulse" : "w-1.5 h-1.5 rounded-full bg-accent-crimson animate-pulse";
-                text.innerText = connected ? "实时后端" : "本地模拟";
+                text.innerText = connected ? "在线" : "模拟数据";
                 text.className = connected ? "text-white/70" : "text-white/30";
             }
         }
@@ -651,7 +764,8 @@
                 CLOSE_DOOR: '远程上锁',
                 REQUEST_PHOTO: '请求拍照',
                 REQUEST_DETECT_FIRE_EXTINGUISHER: '识别灭火器',
-                REQUEST_DETECT_DRONE: '识别无人机'
+                REQUEST_DETECT_DRONE: '识别无人机',
+                PROCESS_DETECTION_PACKAGE: '处理验收图片包'
             };
             return labels[type] || type;
         }
@@ -668,7 +782,7 @@
 
         async function sendControl(type, payload = {}) {
             try {
-                showToast(`正在发送指令 // ${commandLabel(type)}`);
+                showToast(`正在发送：${commandLabel(type)}`);
                 const res = await fetch(`${API_BASE}/commands`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -679,11 +793,11 @@
                     throw new Error(json.error?.message || 'command failed');
                 }
                 setConnectionStatus(true);
-                showToast(`指令已入队 // ${json.data.id}`, 'success');
+                showToast(`指令已发送：${json.data.id}`, 'success');
                 setTimeout(fetchLatestStatus, 600);
             } catch (error) {
                 setConnectionStatus(false);
-                showToast(`指令失败 // ${error.message || 'FAILED'}`, 'error');
+                showToast(`指令失败：${error.message || '失败'}`, 'error');
             }
         }
 
@@ -719,7 +833,7 @@
                 imgEl.onerror = () => {
                     imgEl.classList.add('hidden');
                     placeholder.classList.remove('hidden');
-                    placeholderTitle.innerText = '已收到画面 // 图片解码失败';
+                    placeholderTitle.innerText = '图片加载失败';
                     placeholderDetail.innerText = assetUrl;
                 };
             } else {
@@ -740,15 +854,15 @@
             }
 
             if (photo.access_decision === 'allow') {
-                faceContainer.className = "mt-2 p-3 rounded-lg border border-accent-emerald/20 bg-accent-emerald/[0.02] text-xs text-accent-emerald flex items-center space-x-2";
+                faceContainer.className = "mt-2 p-3 rounded-lg border border-accent-emerald/25 bg-accent-emerald/[0.04] text-xs text-accent-emerald flex items-center space-x-2";
                 faceContainer.innerHTML = `<i data-lucide="shield-check" class="w-4 h-4 text-accent-emerald"></i>
-                                           <div><span class="font-bold">鉴权通过：</span> ${escapeHTML(photo.face_result?.matched_name || '已登记人员')} // ${(Number(photo.face_result?.confidence || 0) * 100).toFixed(0)}%</div>`;
+                                           <div><span class="font-semibold">鉴权通过：</span>${escapeHTML(photo.face_result?.matched_name || '已登记人员')} · ${(Number(photo.face_result?.confidence || 0) * 100).toFixed(0)}%</div>`;
             } else if (photo.access_decision === 'deny') {
-                faceContainer.className = "mt-2 p-3 rounded-lg border border-accent-crimson/20 bg-accent-crimson/[0.02] text-xs text-accent-crimson flex items-center space-x-2";
+                faceContainer.className = "mt-2 p-3 rounded-lg border border-accent-crimson/25 bg-accent-crimson/[0.04] text-xs text-accent-crimson flex items-center space-x-2";
                 faceContainer.innerHTML = `<i data-lucide="shield-alert" class="w-4 h-4 text-accent-crimson"></i>
-                                           <div><span class="font-bold">鉴权拒绝：</span> 未识别身份</div>`;
+                                           <div><span class="font-semibold">鉴权拒绝：</span>未识别身份</div>`;
             } else {
-                faceContainer.className = "mt-2 p-3 rounded-lg border border-white/[0.04] bg-dark-950 text-xs text-white/40 flex items-center space-x-2";
+                faceContainer.className = "mt-2 p-3 rounded-lg border border-white/[0.08] bg-dark-950 text-xs text-white/45 flex items-center space-x-2";
                 faceContainer.innerHTML = `<i data-lucide="fingerprint" class="w-4 h-4 text-white/20"></i><span>待机</span>`;
             }
             renderIcons();
@@ -756,7 +870,7 @@
 
         async function fetchHistory() {
             const tbody = document.getElementById('history-table-body');
-            tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-white/20">正在查询遥测数据库...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-12 text-center text-white/25">正在加载记录...</td></tr>`;
 
             const data = await fetchData('/telemetry?limit=50', 'history');
             if (!data?.ok || !data.data.length) {
@@ -766,7 +880,7 @@
 
             tbody.innerHTML = data.data.map(row => `
                 <tr class="hover:bg-white/[0.01] transition-colors border-b border-white/[0.01]">
-                    <td class="px-6 py-3.5 text-white/40">${formatShortTime(row.captured_at)}</td>
+                    <td class="px-6 py-3.5 font-mono text-xs text-white/40">${formatShortTime(row.captured_at)}</td>
                     <td class="px-6 py-3.5"><span class="font-medium ${Number(row.temperature_c) > 29 ? 'text-accent-crimson' : 'text-white'}">${escapeHTML(row.temperature_c)}</span></td>
                     <td class="px-6 py-3.5"><span class="text-[11px] ${row.door_open ? 'text-accent-cyber font-bold' : 'text-white/40'}">${row.door_open ? '开启' : '已上锁'}</span></td>
                     <td class="px-6 py-3.5 text-white/60">${row.window_open ? '开启' : '关闭'}</td>
@@ -774,6 +888,183 @@
                     <td class="px-6 py-3.5"><span class="text-[11px] ${row.fan_on ? 'text-accent-emerald font-bold' : 'text-white/40'}">${row.fan_on ? '运行中' : '关闭'}</span></td>
                 </tr>
             `).join('');
+        }
+
+        function getSelectedFiles(inputId) {
+            return Array.from(document.getElementById(inputId)?.files || []);
+        }
+
+        function summarizeSelectedFiles(files) {
+            if (!files.length) return '还未选择文件';
+            const imageCount = files.filter(file => !file.name.toLowerCase().endsWith('.zip')).length;
+            const zipCount = files.length - imageCount;
+            const names = files.slice(0, 3).map(file => file.name).join('、');
+            const more = files.length > 3 ? ` 等 ${files.length} 个文件` : '';
+            return `${imageCount} 张图片，${zipCount} 个 ZIP｜${names}${more}`;
+        }
+
+        function updateDetectionSelection() {
+            const fireFiles = getSelectedFiles('fire-files');
+            const droneFiles = getSelectedFiles('drone-files');
+            document.getElementById('fire-file-summary').innerText = summarizeSelectedFiles(fireFiles);
+            document.getElementById('drone-file-summary').innerText = summarizeSelectedFiles(droneFiles);
+            const total = fireFiles.length + droneFiles.length;
+            document.getElementById('detection-upload-hint').innerText = total
+                ? `已选择 ${total} 个文件。ZIP 会由后端解包，只保留图片。`
+                : '验收包通常是 12 张灭火器 + 12 张无人机；数量不一致也可以先上传联调。';
+        }
+
+        function appendDetectionFiles(formData, fieldPrefix, files) {
+            files.forEach(file => {
+                const lowerName = file.name.toLowerCase();
+                if (lowerName.endsWith('.zip')) {
+                    formData.append(`${fieldPrefix}_zip`, file);
+                } else {
+                    formData.append(`${fieldPrefix}_images`, file);
+                }
+            });
+        }
+
+        async function submitDetectionJob() {
+            const fireFiles = getSelectedFiles('fire-files');
+            const droneFiles = getSelectedFiles('drone-files');
+            if (!fireFiles.length && !droneFiles.length) {
+                showToast('请先选择图片或 ZIP', 'error');
+                return;
+            }
+
+            const button = document.getElementById('submit-detection-btn');
+            const formData = new FormData();
+            formData.append('device_id', DEVICE_ID);
+            appendDetectionFiles(formData, 'fire_extinguisher', fireFiles);
+            appendDetectionFiles(formData, 'drone', droneFiles);
+
+            try {
+                button.disabled = true;
+                showToast('正在上传验收图片包...');
+                const res = await fetch(`${API_BASE}/detection-jobs`, { method: 'POST', body: formData });
+                const json = await res.json();
+                if (!res.ok || !json.ok) throw new Error(json.error?.message || 'upload failed');
+                setConnectionStatus(true);
+                activeDetectionJobId = json.data.id;
+                showToast('检测任务已派发给香橙派', 'success');
+                renderDetectionJob(json.data);
+                fetchDetectionJobs();
+                startDetectionPolling(activeDetectionJobId);
+            } catch (error) {
+                setConnectionStatus(false);
+                showToast(`上传失败：${error.message}`, 'error');
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        function detectionStatusLabel(status) {
+            const labels = { queued: '等待香橙派', processing: '处理中', done: '已完成', failed: '失败', partial: '部分完成' };
+            return labels[status] || status || '--';
+        }
+
+        function statusBadgeClass(status) {
+            if (status === 'done') return 'bg-accent-emerald/10 text-accent-emerald border-accent-emerald/20';
+            if (status === 'failed' || status === 'partial') return 'bg-accent-crimson/10 text-accent-crimson border-accent-crimson/20';
+            if (status === 'processing') return 'bg-accent-cyber/10 text-accent-cyber border-accent-cyber/20';
+            return 'bg-white/[0.04] text-white/45 border-white/[0.08]';
+        }
+
+        async function fetchDetectionJobs() {
+            try {
+                const res = await fetch(`${API_BASE}/detection-jobs?limit=20`);
+                const json = await res.json();
+                if (!res.ok || !json.ok) throw new Error(json.error?.message || 'jobs failed');
+                setConnectionStatus(true);
+                renderDetectionJobList(json.data || []);
+                if (!activeDetectionJobId && json.data?.[0]) {
+                    await loadDetectionJob(json.data[0].id);
+                }
+            } catch (error) {
+                setConnectionStatus(false);
+                document.getElementById('detection-job-list').innerHTML = `<div class="text-xs text-accent-crimson">任务列表加载失败：${escapeHTML(error.message)}</div>`;
+            }
+        }
+
+        function renderDetectionJobList(jobs) {
+            document.getElementById('detection-job-count').innerText = `${jobs.length} 条`;
+            const list = document.getElementById('detection-job-list');
+            if (!jobs.length) {
+                list.innerHTML = '<div class="text-xs text-white/30">暂无任务</div>';
+                return;
+            }
+            list.innerHTML = jobs.map(job => `
+                <button type="button" onclick="loadDetectionJob('${escapeHTML(job.id)}')" class="w-full text-left p-3 rounded-lg border ${activeDetectionJobId === job.id ? 'border-accent-cyber/40 bg-accent-cyber/[0.04]' : 'border-white/[0.06] bg-dark-950 hover:bg-white/[0.03]'} transition-colors">
+                    <div class="flex items-center justify-between gap-3">
+                        <span class="font-mono text-xs text-white/70">${escapeHTML(job.id)}</span>
+                        <span class="text-[10px] px-2 py-0.5 rounded border ${statusBadgeClass(job.status)}">${detectionStatusLabel(job.status)}</span>
+                    </div>
+                    <div class="text-[11px] text-white/35 mt-2">${job.total_count || 0} 张 · 完成 ${job.completed_count || 0} · 失败 ${job.failed_count || 0}</div>
+                </button>
+            `).join('');
+        }
+
+        async function loadDetectionJob(jobId) {
+            try {
+                const res = await fetch(`${API_BASE}/detection-jobs/${encodeURIComponent(jobId)}`);
+                const json = await res.json();
+                if (!res.ok || !json.ok) throw new Error(json.error?.message || 'job failed');
+                setConnectionStatus(true);
+                activeDetectionJobId = json.data.id;
+                renderDetectionJob(json.data);
+                if (['queued', 'processing'].includes(json.data.status)) startDetectionPolling(json.data.id);
+            } catch (error) {
+                showToast(`任务加载失败：${error.message}`, 'error');
+            }
+        }
+
+        function startDetectionPolling(jobId) {
+            if (detectionPollTimer) clearInterval(detectionPollTimer);
+            detectionPollTimer = setInterval(async () => {
+                if (activeDetectionJobId !== jobId) return;
+                await loadDetectionJob(jobId);
+            }, 3500);
+        }
+
+        function renderDetectionJob(job) {
+            document.getElementById('detection-active-job').innerText = `${job.id} · ${formatShortTime(job.created_at)} · ${detectionStatusLabel(job.status)}`;
+            document.getElementById('detection-summary').innerHTML = [
+                ['灭火器', job.expected_fire_count],
+                ['无人机', job.expected_drone_count],
+                ['完成', job.completed_count],
+                ['失败', job.failed_count]
+            ].map(([label, value]) => `<span class="px-2 py-1 rounded border border-white/[0.08] bg-dark-950 text-white/55">${label} ${value ?? 0}</span>`).join('');
+
+            const items = job.items || [];
+            const results = document.getElementById('detection-results');
+            if (!items.length) {
+                results.innerHTML = '<div class="text-xs text-white/30 border border-white/[0.06] rounded-lg p-6 text-center">这个任务没有图片</div>';
+                return;
+            }
+            results.innerHTML = items.map(item => {
+                const labels = item.yolo_labels?.length
+                    ? item.yolo_labels.map(label => `<span class="inline-flex items-center px-2 py-0.5 rounded bg-white/[0.04] border border-white/10 text-[11px] text-white/70">${escapeHTML(translateLabel(label.label))}<span class="ml-1.5 text-white/35">${(Number(label.confidence || 0) * 100).toFixed(0)}%</span></span>`).join('')
+                    : '<span class="text-xs text-white/30">暂无标签</span>';
+                return `
+                    <div class="border border-white/[0.06] rounded-lg overflow-hidden bg-dark-950">
+                        <div class="aspect-video bg-dark-900 overflow-hidden">
+                            <img src="${resolveAssetUrl(item.file_url, item.updated_at)}" alt="${escapeHTML(item.filename)}" class="w-full h-full object-cover" loading="lazy">
+                        </div>
+                        <div class="p-4 space-y-3">
+                            <div class="flex items-start justify-between gap-3">
+                                <div>
+                                    <div class="text-sm text-white/75 truncate" title="${escapeHTML(item.filename)}">${escapeHTML(item.filename)}</div>
+                                    <div class="text-[11px] text-white/35 mt-1">期望：${escapeHTML(translateLabel(item.expected_label))}</div>
+                                </div>
+                                <span class="text-[10px] px-2 py-0.5 rounded border ${statusBadgeClass(item.status)}">${detectionStatusLabel(item.status)}</span>
+                            </div>
+                            <div class="flex flex-wrap gap-2">${labels}</div>
+                            ${item.error_message ? `<div class="text-xs text-accent-crimson">${escapeHTML(item.error_message)}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
         async function fetchPersons() {
@@ -787,7 +1078,7 @@
             const roles = { student: '学生', teacher: '教师', guest: '访客' };
             tbody.innerHTML = data.data.map(person => `
                 <tr class="hover:bg-white/[0.01] transition-colors border-b border-white/[0.01]">
-                    <td class="px-6 py-4 text-white/30 text-[11px]">${escapeHTML(person.id)}</td>
+                    <td class="px-6 py-4 font-mono text-xs text-white/30">${escapeHTML(person.id)}</td>
                     <td class="px-6 py-4 font-medium text-white">${escapeHTML(person.name)}</td>
                     <td class="px-6 py-4 text-white/50">${escapeHTML(roles[person.role] || person.role)}</td>
                     <td class="px-6 py-4">
@@ -802,9 +1093,13 @@
                         }
                     </td>
                     <td class="px-6 py-4 text-right text-xs font-medium">
-                        <button type="button" onclick='editPerson(${JSON.stringify(person.id)}, ${JSON.stringify(person.name)})' class="text-accent-cyber hover:opacity-80 mr-4 transition-opacity">编辑</button>
-                        <button type="button" onclick='enrollFace(${JSON.stringify(person.id)})' class="text-accent-emerald hover:opacity-80 mr-4 transition-opacity">${person.face_enrolled ? '更新人脸' : '录入人脸'}</button>
-                        <button type="button" onclick='deletePerson(${JSON.stringify(person.id)})' class="text-accent-crimson hover:opacity-80 transition-opacity">删除</button>
+                        <div class="flex flex-wrap items-center justify-end gap-x-4 gap-y-2">
+                            <button type="button" onclick='editPerson(${JSON.stringify(person.id)}, ${JSON.stringify(person.name)})' class="text-accent-cyber hover:opacity-80 transition-opacity">编辑</button>
+                            <button type="button" onclick='uploadFaceFromFile(${JSON.stringify(person.id)})' class="text-accent-emerald hover:opacity-80 transition-opacity">上传照片</button>
+                            <button type="button" onclick='openFaceCamera(${JSON.stringify(person.id)})' class="text-white/70 hover:text-white transition-colors">本机拍照</button>
+                            <button type="button" onclick='requestOrangePiFaceCapture(${JSON.stringify(person.id)})' class="text-white/55 hover:text-white transition-colors">香橙派拍照</button>
+                            <button type="button" onclick='deletePerson(${JSON.stringify(person.id)})' class="text-accent-crimson hover:opacity-80 transition-opacity">删除</button>
+                        </div>
                     </td>
                 </tr>
             `).join('');
@@ -825,12 +1120,12 @@
                 const json = await res.json();
                 if (!res.ok || !json.ok) throw new Error(json.error?.message || 'register failed');
                 showToast('人员已登记', 'success');
-                if (confirm('是否现在为该人员录入人脸照片？')) {
-                    await enrollFace(json.data.id, { refresh: false });
+                if (confirm('是否现在从电脑选择照片录入？')) {
+                    await uploadFaceFromFile(json.data.id, { refresh: false });
                 }
                 fetchPersons();
             } catch (error) {
-                showToast(`登记失败 // ${error.message}`, 'error');
+                showToast(`登记失败：${error.message}`, 'error');
             }
         }
 
@@ -850,11 +1145,10 @@
             });
         }
 
-        async function enrollFace(personId, options = {}) {
-            const file = await pickImageFile();
-            if (!file) return;
+        async function uploadFaceImage(personId, image, filename, options = {}) {
+            if (!image) return false;
             const formData = new FormData();
-            formData.append('image', file);
+            formData.append('image', image, filename || image.name || `face-${Date.now()}.jpg`);
             try {
                 showToast('正在上传人脸照片...');
                 const res = await fetch(`${API_BASE}/persons/${personId}/face-samples`, {
@@ -864,11 +1158,132 @@
                 const json = await res.json();
                 if (!res.ok || !json.ok) throw new Error(json.error?.message || 'face upload failed');
                 setConnectionStatus(true);
-                showToast('人脸照片已录入', 'success');
+                const versionText = json.data?.sample?.sync_version ? `，同步版本 ${json.data.sample.sync_version}` : '';
+                showToast(`人脸照片已录入${versionText}`, 'success');
                 if (options.refresh !== false) fetchPersons();
+                return true;
             } catch (error) {
                 setConnectionStatus(false);
-                showToast(`人脸录入失败 // ${error.message}`, 'error');
+                showToast(`人脸录入失败：${error.message}`, 'error');
+                return false;
+            }
+        }
+
+        async function uploadFaceFromFile(personId, options = {}) {
+            const file = await pickImageFile();
+            if (!file) return;
+            return uploadFaceImage(personId, file, file.name, options);
+        }
+
+        async function enrollFace(personId, options = {}) {
+            return uploadFaceFromFile(personId, options);
+        }
+
+        async function requestOrangePiFaceCapture(personId) {
+            try {
+                showToast('正在通知香橙派拍照...');
+                const res = await fetch(`${API_BASE}/persons/${personId}/face-capture-request`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ device_id: DEVICE_ID })
+                });
+                const json = await res.json();
+                if (!res.ok || !json.ok) throw new Error(json.error?.message || 'capture request failed');
+                setConnectionStatus(true);
+                showToast('香橙派拍照命令已派发', 'success');
+            } catch (error) {
+                setConnectionStatus(false);
+                showToast(`派发失败：${error.message}`, 'error');
+            }
+        }
+
+        function setFaceCameraStatus(message) {
+            const status = document.getElementById('face-camera-status');
+            if (status) status.innerText = message;
+        }
+
+        function stopFaceCameraStream() {
+            if (faceCameraStream) {
+                faceCameraStream.getTracks().forEach(track => track.stop());
+            }
+            faceCameraStream = null;
+        }
+
+        async function openFaceCamera(personId) {
+            const modal = document.getElementById('face-camera-modal');
+            const video = document.getElementById('face-camera-video');
+            faceCameraPersonId = personId;
+            if (!navigator.mediaDevices?.getUserMedia) {
+                showToast('浏览器不支持本机摄像头录入，请改用上传照片', 'error');
+                return;
+            }
+            if (!window.isSecureContext && !['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+                showToast('本机摄像头需要 HTTPS，当前可先用上传照片', 'error');
+                return;
+            }
+            try {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                setFaceCameraStatus('摄像头启动中');
+                renderIcons();
+                stopFaceCameraStream();
+                faceCameraStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+                    audio: false
+                });
+                video.srcObject = faceCameraStream;
+                await video.play();
+                setFaceCameraStatus('摄像头已就绪');
+            } catch (error) {
+                closeFaceCamera();
+                showToast(`摄像头打开失败：${error.message}`, 'error');
+            }
+        }
+
+        function closeFaceCamera() {
+            stopFaceCameraStream();
+            faceCameraPersonId = null;
+            const video = document.getElementById('face-camera-video');
+            if (video) video.srcObject = null;
+            const modal = document.getElementById('face-camera-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        function canvasToBlob(canvas) {
+            return new Promise((resolve, reject) => {
+                canvas.toBlob(blob => {
+                    if (blob) resolve(blob);
+                    else reject(new Error('photo encode failed'));
+                }, 'image/jpeg', 0.92);
+            });
+        }
+
+        async function captureFacePhoto() {
+            const video = document.getElementById('face-camera-video');
+            const button = document.getElementById('face-camera-capture-btn');
+            if (!faceCameraPersonId || !video?.videoWidth || !video?.videoHeight) {
+                showToast('摄像头画面还没有准备好', 'error');
+                return;
+            }
+            try {
+                if (button) button.disabled = true;
+                setFaceCameraStatus('正在上传照片');
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const context = canvas.getContext('2d');
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const blob = await canvasToBlob(canvas);
+                const personId = faceCameraPersonId;
+                closeFaceCamera();
+                await uploadFaceImage(personId, blob, `camera-face-${Date.now()}.jpg`);
+            } catch (error) {
+                showToast(`拍照录入失败：${error.message}`, 'error');
+            } finally {
+                if (button) button.disabled = false;
             }
         }
 
@@ -886,7 +1301,7 @@
                 showToast('人员已更新', 'success');
                 fetchPersons();
             } catch (error) {
-                showToast(`更新失败 // ${error.message}`, 'error');
+                showToast(`更新失败：${error.message}`, 'error');
             }
         }
 
@@ -899,7 +1314,7 @@
                 showToast('人员已删除', 'success');
                 fetchPersons();
             } catch (error) {
-                showToast(`删除失败 // ${error.message}`, 'error');
+                showToast(`删除失败：${error.message}`, 'error');
             }
         }
 

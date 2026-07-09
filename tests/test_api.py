@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import base64
+import io
 import sys
+import zipfile
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -170,6 +172,103 @@ def test_person_photo_yolo_command_flow(client):
     assert any(event["type"] == "command_done" for event in events)
 
 
+def test_face_library_sync_and_orange_pi_capture_flow(client):
+    person = assert_ok(
+        client.post(
+            "/api/persons",
+            json={"name": "Family A", "role": "student", "authorized": True},
+        )
+    )
+
+    enrolled = assert_ok(
+        client.post(
+            f"/api/persons/{person['id']}/face-samples",
+            files={"image": ("family-a.jpg", SAMPLE_JPEG, "image/jpeg")},
+        )
+    )
+    first_sample = enrolled["sample"]
+    assert first_sample["sync_version"] == 1
+    assert first_sample["image_url"].startswith("http://82.156.238.244/uploads/faces/")
+
+    sync = assert_ok(
+        client.get(
+            "/api/device/face-library/sync",
+            params={"device_id": "orange-pi-main", "since_version": 0},
+        )
+    )
+    assert sync["to_version"] == first_sample["sync_version"]
+    assert sync["has_more"] is False
+    assert sync["changes"][0]["change_type"] == "upsert"
+    assert sync["changes"][0]["member_name"] == "Family A"
+    assert sync["changes"][0]["authorized"] is True
+
+    ack = assert_ok(
+        client.post(
+            "/api/device/face-library/ack",
+            json={"device_id": "orange-pi-main", "synced_version": sync["to_version"], "message": "ok"},
+        )
+    )
+    assert ack["synced_version"] == sync["to_version"]
+
+    requested = assert_ok(
+        client.post(
+            f"/api/persons/{person['id']}/face-capture-request",
+            json={"device_id": "orange-pi-main"},
+        )
+    )
+    assert requested["queued"] is True
+    assert requested["command"]["type"] == "CAPTURE_FACE_SAMPLE"
+
+    pending = assert_ok(client.get("/api/device/commands/pending", params={"device_id": "orange-pi-main"}))
+    capture_command = next(command for command in pending if command["type"] == "CAPTURE_FACE_SAMPLE")
+    assert capture_command["payload"]["person_id"] == person["id"]
+    assert capture_command["payload"]["upload_url"] == "/api/device/face-captures"
+
+    captured = assert_ok(
+        client.post(
+            "/api/device/face-captures",
+            data={
+                "device_id": "orange-pi-main",
+                "person_id": person["id"],
+                "command_id": capture_command["id"],
+            },
+            files={"image": ("orange-pi-face.jpg", SAMPLE_JPEG, "image/jpeg")},
+        )
+    )
+    assert captured["face_enrolled"] is True
+    assert captured["sample"]["sync_version"] > sync["to_version"]
+
+    second_sync = assert_ok(
+        client.get(
+            "/api/device/face-library/sync",
+            params={"device_id": "orange-pi-main", "since_version": sync["to_version"]},
+        )
+    )
+    assert len(second_sync["changes"]) == 1
+    assert second_sync["changes"][0]["face_sample_id"] == captured["sample"]["id"]
+
+    updated = assert_ok(client.patch(f"/api/persons/{person['id']}", json={"authorized": False}))
+    assert updated["authorized"] is False
+    third_sync = assert_ok(
+        client.get(
+            "/api/device/face-library/sync",
+            params={"device_id": "orange-pi-main", "since_version": second_sync["to_version"]},
+        )
+    )
+    assert {change["authorized"] for change in third_sync["changes"]} == {False}
+    assert {change["change_type"] for change in third_sync["changes"]} == {"upsert"}
+
+    deleted = assert_ok(client.delete(f"/api/persons/{person['id']}"))
+    assert deleted["deleted"] is True
+    delete_sync = assert_ok(
+        client.get(
+            "/api/device/face-library/sync",
+            params={"device_id": "orange-pi-main", "since_version": third_sync["to_version"]},
+        )
+    )
+    assert {change["change_type"] for change in delete_sync["changes"]} == {"delete"}
+
+
 def test_active_detection_command_and_event_upload(client):
     command = assert_ok(
         client.post(
@@ -220,3 +319,78 @@ def test_active_detection_command_and_event_upload(client):
     history = assert_ok(client.get("/api/photos", params={"limit": 10}))
     assert len(history) == 1
     assert history[0]["source"] == "drone"
+
+
+def make_zip(*names):
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w") as archive:
+        for name in names:
+            archive.writestr(name, SAMPLE_JPEG)
+    buffer.seek(0)
+    return buffer.getvalue()
+
+
+def test_detection_package_upload_command_and_results(client):
+    created = assert_ok(
+        client.post(
+            "/api/detection-jobs",
+            data={"device_id": "orange-pi-main"},
+            files=[
+                ("fire_extinguisher_images", ("fire-1.jpg", SAMPLE_JPEG, "image/jpeg")),
+                ("drone_images", ("drone-1.jpg", SAMPLE_JPEG, "image/jpeg")),
+                ("drone_images", ("drone-2.png", SAMPLE_JPEG, "image/png")),
+            ],
+        )
+    )
+    assert created["status"] == "queued"
+    assert created["expected_fire_count"] == 1
+    assert created["expected_drone_count"] == 2
+    assert created["total_count"] == 3
+    assert created["command"]["type"] == "PROCESS_DETECTION_PACKAGE"
+    assert created["command"]["payload"]["job_id"] == created["id"]
+
+    pending = assert_ok(client.get("/api/device/commands/pending", params={"device_id": "orange-pi-main"}))
+    package_command = next(command for command in pending if command["type"] == "PROCESS_DETECTION_PACKAGE")
+    assert len(package_command["payload"]["items"]) == 3
+
+    pulled_job = assert_ok(client.get(f"/api/detection-jobs/{created['id']}"))
+    assert pulled_job["status"] == "processing"
+    assert all(item["status"] == "processing" for item in pulled_job["items"])
+
+    result_items = [
+        {
+            "item_id": item["id"],
+            "status": "done",
+            "yolo_labels": [{"label": item["expected_label"], "confidence": 0.9}],
+        }
+        for item in pulled_job["items"]
+    ]
+    completed = assert_ok(
+        client.post(
+            f"/api/device/detection-jobs/{created['id']}/results",
+            json={"device_id": "orange-pi-main", "items": result_items},
+        )
+    )
+    assert completed["status"] == "done"
+    assert completed["completed_count"] == 3
+    assert completed["failed_count"] == 0
+    assert completed["items"][0]["yolo_labels"][0]["confidence"] == 0.9
+
+
+def test_detection_package_accepts_zip_files(client):
+    fire_zip = make_zip("fire/a.jpg", "fire/b.png", "notes.txt")
+    drone_zip = make_zip("drone/a.jpg")
+    created = assert_ok(
+        client.post(
+            "/api/detection-jobs",
+            data={"device_id": "orange-pi-main"},
+            files=[
+                ("fire_extinguisher_zip", ("fire.zip", fire_zip, "application/zip")),
+                ("drone_zip", ("drone.zip", drone_zip, "application/zip")),
+            ],
+        )
+    )
+    assert created["expected_fire_count"] == 2
+    assert created["expected_drone_count"] == 1
+    assert created["total_count"] == 3
+    assert all(item["file_url"].startswith(f"/uploads/detection_jobs/{created['id']}/") for item in created["items"])
