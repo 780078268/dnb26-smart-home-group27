@@ -57,9 +57,6 @@ class PersonPatch(BaseModel):
     authorized: bool | None = None
 
 
-class FaceCaptureRequest(BaseModel):
-    device_id: str = "orange-pi-main"
-
 
 class FaceLibraryAck(BaseModel):
     device_id: str

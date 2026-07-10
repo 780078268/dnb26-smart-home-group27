@@ -210,19 +210,11 @@ def test_face_library_sync_and_orange_pi_capture_flow(client):
     )
     assert ack["synced_version"] == sync["to_version"]
 
-    requested = assert_ok(
-        client.post(
-            f"/api/persons/{person['id']}/face-capture-request",
-            json={"device_id": "orange-pi-main"},
-        )
+    removed_trigger = client.post(
+        f"/api/persons/{person['id']}/face-capture-request",
+        json={"device_id": "orange-pi-main"},
     )
-    assert requested["queued"] is True
-    assert requested["command"]["type"] == "CAPTURE_FACE_SAMPLE"
-
-    pending = assert_ok(client.get("/api/device/commands/pending", params={"device_id": "orange-pi-main"}))
-    capture_command = next(command for command in pending if command["type"] == "CAPTURE_FACE_SAMPLE")
-    assert capture_command["payload"]["person_id"] == person["id"]
-    assert capture_command["payload"]["upload_url"] == "/api/device/face-captures"
+    assert removed_trigger.status_code == 404
 
     captured = assert_ok(
         client.post(
@@ -230,7 +222,6 @@ def test_face_library_sync_and_orange_pi_capture_flow(client):
             data={
                 "device_id": "orange-pi-main",
                 "person_id": person["id"],
-                "command_id": capture_command["id"],
             },
             files={"image": ("orange-pi-face.jpg", SAMPLE_JPEG, "image/jpeg")},
         )

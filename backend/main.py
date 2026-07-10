@@ -23,7 +23,6 @@ from .schemas import (
     CommandAck,
     CommandCreate,
     DetectionJobResultUpload,
-    FaceCaptureRequest,
     FaceLibraryAck,
     PersonCreate,
     PersonPatch,
@@ -810,27 +809,6 @@ def upload_face_sample(person_id: str, image: UploadFile = File(...)) -> dict[st
     with connect() as conn:
         sample = save_face_sample(conn, person_id, image)
     return ok({"person_id": person_id, "face_enrolled": True, "sample": sample})
-
-
-@app.post("/api/persons/{person_id}/face-capture-request")
-def request_face_capture(person_id: str, payload: FaceCaptureRequest) -> dict[str, Any]:
-    with connect() as conn:
-        person = conn.execute("SELECT * FROM persons WHERE id = ?", (person_id,)).fetchone()
-        if not person:
-            raise HTTPException(status_code=404, detail="person not found")
-        touch_device(conn, payload.device_id)
-        command = create_command(
-            conn,
-            payload.device_id,
-            "CAPTURE_FACE_SAMPLE",
-            {
-                "person_id": person_id,
-                "member_name": person["name"],
-                "upload_url": "/api/device/face-captures",
-            },
-        )
-        add_event(conn, "face_capture_requested", f"face capture requested for {person_id} on {payload.device_id}")
-    return ok({"queued": True, "person_id": person_id, "command": command})
 
 
 @app.post("/api/device/face-captures")
